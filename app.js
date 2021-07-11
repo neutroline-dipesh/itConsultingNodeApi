@@ -18,12 +18,16 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
+app.use("/public/assets", express.static("public/assets"));
 
 //require all routes
 const allQueriesRouter = require("./routes/allQueriesRoutes");
-
+const interRouter = require("./routes/internalRoutes");
+const contractRouter = require("./routes/contractRoutes");
 //use all routes
 app.use("/allQueries", allQueriesRouter);
+app.use("/internal", interRouter);
+app.use("/contract", contractRouter);
 
 app.listen(PORT, () => {
   console.log("Server start at port : " + PORT);

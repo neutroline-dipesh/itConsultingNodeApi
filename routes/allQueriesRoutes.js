@@ -124,6 +124,33 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
+//update status allqueries
+router.patch("/status/:id", async (req, res) => {
+  console.log(req.params.id);
+
+  let data = req.body;
+
+  try {
+    var sql = "UPDATE allqueries set status = ? WHERE id = ?";
+    mysqlconnection.query(
+      sql,
+      [data.status, req.params.id],
+      (err, rows, fields) => {
+        if (!err) {
+          res.status(200).json({
+            status: "ok",
+            data: data,
+          });
+        } else console.log(err);
+      }
+    );
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
 //get by ID allqueries
 router.delete("/:id", async (req, res) => {
   try {
