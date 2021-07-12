@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const mysqlconnection = require("../model/db");
+const auth = require("../middlewares/checkAuth");
 
 //post allqueries
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   let data = req.body;
   var date = new Date();
   var postedDate =
@@ -46,13 +47,14 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     var sql = "SELECT * FROM allqueries";
-    mysqlconnection.query(sql, (err, result) => {
+    const output = mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({
           status: "ok",
           data: result,
         });
-        // console.log(result);
+        console.log(result.length);
+        // console.log(output);
       } else console.log(err);
     });
   } catch (err) {
@@ -66,15 +68,19 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     var sql = "SELECT * FROM allqueries WHERE id = ?";
-    mysqlconnection.query(sql, [req.params.id], (err, result) => {
-      if (!err) {
-        res.status(200).json({
-          status: "ok",
-          data: result,
-        });
-        // console.log(result);
-      } else console.log(err);
-    });
+    const output = mysqlconnection.query(
+      sql,
+      [req.params.id],
+      (err, result) => {
+        if (!err) {
+          res.status(200).json({
+            status: "ok",
+            data: result,
+          });
+          console.log(output);
+        } else console.log(err);
+      }
+    );
   } catch (err) {
     res.json({
       message: err,
@@ -83,7 +89,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //update allqueries
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", auth, async (req, res) => {
   console.log(req.params.id);
 
   let data = req.body;
@@ -127,7 +133,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 //update status allqueries
-router.patch("/status/:id", async (req, res) => {
+router.patch("/status/:id", auth, async (req, res) => {
   console.log(req.params.id);
 
   let data = req.body;
@@ -154,7 +160,7 @@ router.patch("/status/:id", async (req, res) => {
 });
 
 //get by ID allqueries
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     var sql = "DELETE FROM allqueries WHERE id = ?";
     mysqlconnection.query(sql, [req.params.id], (err, result) => {

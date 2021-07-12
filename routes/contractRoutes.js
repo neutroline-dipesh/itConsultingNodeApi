@@ -3,6 +3,7 @@ const router = express.Router();
 const mysqlconnection = require("../model/db");
 const path = require("path");
 const multer = require("multer");
+const auth = require("../middlewares/checkAuth");
 
 //for file upload
 const storage = multer.diskStorage({
@@ -18,6 +19,7 @@ const upload = multer({ storage: storage });
 //post internalJobs
 router.post(
   "/",
+  auth,
   upload.fields([
     {
       name: "resume",
@@ -118,7 +120,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //update status internalJobs
-router.patch("/status/:id", async (req, res) => {
+router.patch("/status/:id", auth, async (req, res) => {
   console.log(req.params.id);
 
   let data = req.body;
@@ -145,7 +147,7 @@ router.patch("/status/:id", async (req, res) => {
 });
 
 //update approvelStatus internalJobs
-router.patch("/approvelStatus/:id", async (req, res) => {
+router.patch("/approvelStatus/:id", auth, async (req, res) => {
   console.log(req.params.id);
 
   let data = req.body;
@@ -172,7 +174,7 @@ router.patch("/approvelStatus/:id", async (req, res) => {
 });
 
 //get by ID internalJobs
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     var sql = "DELETE FROM contract WHERE id = ?";
     mysqlconnection.query(sql, [req.params.id], (err, result) => {

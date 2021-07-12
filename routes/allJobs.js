@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const mysqlconnection = require("../model/db");
+const auth = require("../middlewares/checkAuth");
 
 //post allqueries
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   let data = req.body;
   var date = new Date();
   var postedDate =
@@ -86,7 +87,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //update allqueries
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", auth, async (req, res) => {
   console.log(req.params.id);
 
   let data = req.body;
@@ -133,7 +134,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 //update status allqueries
-router.patch("/visibility/:id", async (req, res) => {
+router.patch("/visibility/:id", auth, async (req, res) => {
   //   console.log(req.params.id);
   var date = new Date();
   var postedDate =
@@ -162,7 +163,7 @@ router.patch("/visibility/:id", async (req, res) => {
 });
 
 //get by ID allqueries
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     var sql = "DELETE FROM alljobs WHERE id = ?";
     mysqlconnection.query(sql, [req.params.id], (err, result) => {
