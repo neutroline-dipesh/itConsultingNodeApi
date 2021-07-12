@@ -12,18 +12,21 @@ router.post("/", async (req, res) => {
   // console.log(postedDate);
   try {
     var sql =
-      "INSERT INTO allqueries SET firstName = ?,lastName = ?, email = ?, phone = ?, address = ?, subject = ?, status=?, message = ?, postedDate = ? ";
+      "INSERT INTO alljobs SET jobId = ?,jobTitle = ?, jobSubtitle = ?, department = ?, jobType = ?, country = ?, state=?, city = ?, description = ?, publishBy = ?, visibility = ?, postedDate = ?";
     await mysqlconnection.query(
       sql,
       [
-        data.firstName,
-        data.lastName,
-        data.email,
-        data.phone,
-        data.address,
-        data.subject,
-        data.status,
-        data.message,
+        data.jobId,
+        data.jobTitle,
+        data.jobSubtitle,
+        data.department,
+        data.jobType,
+        data.country,
+        data.state,
+        data.city,
+        data.description,
+        data.publishBy,
+        data.visibility,
         postedDate,
       ],
       (err, rows, fields) => {
@@ -45,7 +48,7 @@ router.post("/", async (req, res) => {
 //get allqueries
 router.get("/", async (req, res) => {
   try {
-    var sql = "SELECT * FROM allqueries";
+    var sql = "SELECT * FROM alljobs";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({
@@ -65,7 +68,7 @@ router.get("/", async (req, res) => {
 //get by ID allqueries
 router.get("/:id", async (req, res) => {
   try {
-    var sql = "SELECT * FROM allqueries WHERE id = ?";
+    var sql = "SELECT * FROM alljobs WHERE id = ?";
     mysqlconnection.query(sql, [req.params.id], (err, result) => {
       if (!err) {
         res.status(200).json({
@@ -95,18 +98,21 @@ router.patch("/:id", async (req, res) => {
   console.log(postedDate);
   try {
     var sql =
-      "UPDATE allqueries SET firstName = ?,lastName = ?, email = ?, phone = ?, address = ?, subject = ?, status=?, message = ?, postedDate = ? WHERE id=?";
+      "UPDATE alljobs SET jobId = ?,jobTitle = ?, jobSubtitle = ?, department = ?, jobType = ?, country = ?, state=?, city = ?, description = ?, publishBy = ?, visibility = ?, postedDate = ? WHERE id = ?";
     mysqlconnection.query(
       sql,
       [
-        data.firstName,
-        data.lastName,
-        data.email,
-        data.phone,
-        data.address,
-        data.subject,
-        data.status,
-        data.message,
+        data.jobId,
+        data.jobTitle,
+        data.jobSubtitle,
+        data.department,
+        data.jobType,
+        data.country,
+        data.state,
+        data.city,
+        data.description,
+        data.publishBy,
+        data.visibility,
         postedDate,
         req.params.id,
       ],
@@ -127,16 +133,18 @@ router.patch("/:id", async (req, res) => {
 });
 
 //update status allqueries
-router.patch("/status/:id", async (req, res) => {
-  console.log(req.params.id);
-
+router.patch("/visibility/:id", async (req, res) => {
+  //   console.log(req.params.id);
+  var date = new Date();
+  var postedDate =
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   let data = req.body;
 
   try {
-    var sql = "UPDATE allqueries set status = ? WHERE id = ?";
+    var sql = "UPDATE alljobs set visibility = ?, postedDate = ? WHERE id = ?";
     mysqlconnection.query(
       sql,
-      [data.status, req.params.id],
+      [data.visibility, postedDate, req.params.id],
       (err, rows, fields) => {
         if (!err) {
           res.status(200).json({
@@ -156,7 +164,7 @@ router.patch("/status/:id", async (req, res) => {
 //get by ID allqueries
 router.delete("/:id", async (req, res) => {
   try {
-    var sql = "DELETE FROM allqueries WHERE id = ?";
+    var sql = "DELETE FROM alljobs WHERE id = ?";
     mysqlconnection.query(sql, [req.params.id], (err, result) => {
       if (!err) {
         res.status(200).json({

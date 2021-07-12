@@ -24,10 +24,12 @@ app.use("/public/assets", express.static("public/assets"));
 const allQueriesRouter = require("./routes/allQueriesRoutes");
 const interRouter = require("./routes/internalRoutes");
 const contractRouter = require("./routes/contractRoutes");
+const allJobsRouter = require("./routes/allJobs");
 //use all routes
 app.use("/allQueries", allQueriesRouter);
 app.use("/internal", interRouter);
 app.use("/contract", contractRouter);
+app.use("/allJobs", allJobsRouter);
 
 app.listen(PORT, () => {
   console.log("Server start at port : " + PORT);
