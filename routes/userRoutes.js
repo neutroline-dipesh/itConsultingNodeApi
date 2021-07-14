@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = "This is secret Key asdfg";
 const SALT_ROUND = 10;
 const mysqlconnection = require("../model/db");
-const auth = require("../middlewares/checkAuth");
 
 //add user
 router.post("/signup", async (req, res) => {
