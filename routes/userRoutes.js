@@ -66,7 +66,7 @@ router.post("/signup", async (req, res) => {
             data: "Sign up Successfully!",
           });
           return;
-        } else console.log(err);
+        }
       }
     );
   } catch (err) {
@@ -87,6 +87,12 @@ router.post("/login", async (req, res) => {
   try {
     var sql = "SELECT * FROM `user` WHERE email = ?";
     await mysqlconnection.query(sql, email, (err, result) => {
+      console.log(result.length);
+      if (result.length == 0) {
+        return res.status(422).json({
+          message: "Invalid Email !",
+        });
+      }
       if (!err) {
         if (result.length > 0) {
           currentuser = JSON.parse(JSON.stringify(result));
@@ -95,7 +101,7 @@ router.post("/login", async (req, res) => {
             password,
             currentuser[0].password
           );
-          console.log(compairpassword);
+          // console.log(compairpassword);
           if (!compairpassword) {
             res.status(401).json({
               message: "Invald Password",
@@ -104,7 +110,7 @@ router.post("/login", async (req, res) => {
           }
 
           let { id, name } = currentuser[0];
-          console.log(currentuser[0]);
+          // console.log(currentuser[0]);
           let token = jwt.sign(
             {
               id,
@@ -120,7 +126,7 @@ router.post("/login", async (req, res) => {
           });
         }
         return;
-      } else console.log(err);
+      }
     });
   } catch (err) {
     return res.json({
