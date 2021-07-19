@@ -46,7 +46,7 @@ router.post("/", auth, async (req, res) => {
 //get allqueries
 router.get("/", async (req, res) => {
   try {
-    var sql = "SELECT * FROM allqueries";
+    var sql = "SELECT * FROM allqueries ORDER BY id DESC";
     const output = mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({

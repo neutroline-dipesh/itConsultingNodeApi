@@ -82,7 +82,7 @@ router.post(
 //get internalJobs
 router.get("/", async (req, res) => {
   try {
-    var sql = "SELECT * FROM internal";
+    var sql = "SELECT * FROM internal ORDER BY id DESC";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({

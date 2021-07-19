@@ -89,7 +89,7 @@ router.post("/login", async (req, res) => {
     await mysqlconnection.query(sql, email, (err, result) => {
       console.log(result.length);
       if (result.length == 0) {
-        return res.status(422).json({
+        return res.status(400).send({
           message: "Invalid Email !",
         });
       }
@@ -103,8 +103,8 @@ router.post("/login", async (req, res) => {
           );
           // console.log(compairpassword);
           if (!compairpassword) {
-            res.status(401).json({
-              message: "Invald Password",
+            res.status(400).send({
+              message: "Invalid Password !",
             });
             return;
           }
