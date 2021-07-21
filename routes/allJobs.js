@@ -4,41 +4,51 @@ const mysqlconnection = require("../model/db");
 const auth = require("../middlewares/checkAuth");
 
 //post allqueries
+
 router.post("/", auth, async (req, res) => {
-  let data = req.body;
+  var id = "";
   var date = new Date();
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-  // let postedDate = new Date();
-  // console.log(postedDate);
+
   try {
-    var sql =
-      "INSERT INTO alljobs SET jobId = ?,jobTitle = ?, jobSubtitle = ?, department = ?, jobType = ?, country = ?, state=?, city = ?, description = ?, publishBy = ?, visibility = ?, postedDate = ?";
-    await mysqlconnection.query(
-      sql,
-      [
-        data.jobId,
-        data.jobTitle,
-        data.jobSubtitle,
-        data.department,
-        data.jobType,
-        data.country,
-        data.state,
-        data.city,
-        data.description,
-        data.publishBy,
-        data.visibility,
-        postedDate,
-      ],
-      (err, rows, fields) => {
-        if (!err) {
-          res.status(200).json({
-            status: "ok",
-            data: data,
-          });
-        } else console.log(err);
-      }
-    );
+    let data = req.body;
+    var sql1 = "SELECT MAX(id) +1 as id FROM alljobs";
+    mysqlconnection.query(sql1, (err, result) => {
+      if (!err) {
+        var iDdata = JSON.parse(JSON.stringify(result));
+        id = "JOB00" + iDdata[0].id;
+        // console.log(id);
+
+        var sql =
+          "INSERT INTO alljobs SET jobId = ? ,jobTitle = ?, jobSubtitle = ?, department = ?, jobType = ?, country = ?, state=?, city = ?, description = ?, publishBy = ?, visibility = ?, postedDate = ?";
+        mysqlconnection.query(
+          sql,
+          [
+            id,
+            data.jobTitle,
+            data.jobSubtitle,
+            data.department,
+            data.jobType,
+            data.country,
+            data.state,
+            data.city,
+            data.description,
+            data.publishBy,
+            data.visibility,
+            postedDate,
+          ],
+          (err, rows, fields) => {
+            if (!err) {
+              return res.status(200).json({
+                status: "ok",
+                data: data,
+              });
+            } else console.log(err);
+          }
+        );
+      } else console.log(err);
+    });
   } catch (err) {
     res.json({
       message: err,

@@ -6,6 +6,7 @@ const connection = mysql.createConnection({
   user: dbConfig.USER,
   password: dbConfig.PASSWORD,
   database: dbConfig.DB,
+  multipleStatements: true,
 });
 // open the MySQL connection
 connection.connect((error) => {
