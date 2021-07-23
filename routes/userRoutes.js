@@ -111,6 +111,10 @@ router.post("/login", async (req, res) => {
 
           let { id, name } = currentuser[0];
           // console.log(currentuser[0]);
+          // let date = new Date();
+          // let hour = date.getHours();
+          let expHour = "10";
+          console.log(expHour);
           let token = jwt.sign(
             {
               id,
@@ -123,6 +127,9 @@ router.post("/login", async (req, res) => {
           res.status(200).json({
             token,
             name,
+            // date,
+            // hour,
+            expHour,
           });
         }
         return;
