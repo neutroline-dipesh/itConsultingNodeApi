@@ -19,7 +19,6 @@ const upload = multer({ storage: storage });
 //post internalJobs
 router.post(
   "/",
-  auth,
   upload.fields([
     {
       name: "resume",
