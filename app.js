@@ -26,8 +26,10 @@ const interRouter = require("./routes/internalRoutes");
 const contractRouter = require("./routes/contractRoutes");
 const allJobsRouter = require("./routes/allJobs");
 const userRouter = require("./routes/userRoutes");
+const allApplicant = require("./routes/allApplicantRoutes");
 //use all routes
 app.use("/allQueries", allQueriesRouter);
+app.use("/allApplicant", allApplicant);
 app.use("/internal", interRouter);
 app.use("/contract", contractRouter);
 app.use("/allJobs", allJobsRouter);
