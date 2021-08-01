@@ -145,17 +145,17 @@ router.patch("/status/:id", auth, async (req, res) => {
   }
 });
 
-//update approvelStatus internalJobs
+//update approvelStatus contractJobs
 router.patch("/approvelStatus/:id", auth, async (req, res) => {
   console.log(req.params.id);
 
   let data = req.body;
 
   try {
-    var sql = "UPDATE contract set approvelStatus = ? WHERE id = ?";
+    var sql = "UPDATE contract set status = ?,approvelStatus = ? WHERE id = ?";
     mysqlconnection.query(
       sql,
-      [data.approvelStatus, req.params.id],
+      ["seen", data.approvelStatus, req.params.id],
       (err, rows, fields) => {
         if (!err) {
           res.status(200).json({

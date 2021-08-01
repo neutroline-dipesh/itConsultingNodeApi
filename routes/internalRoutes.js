@@ -150,12 +150,13 @@ router.patch("/approvelStatus/:id", auth, async (req, res) => {
   console.log(req.params.id);
 
   let data = req.body;
+  console.log(data);
 
   try {
-    var sql = "UPDATE internal set approvelStatus = ? WHERE id = ?";
+    var sql = "UPDATE internal set status = ?, approvelStatus = ? WHERE id = ?";
     mysqlconnection.query(
       sql,
-      [data.approvelStatus, req.params.id],
+      ["seen", data.approvelStatus, req.params.id],
       (err, rows, fields) => {
         if (!err) {
           res.status(200).json({
