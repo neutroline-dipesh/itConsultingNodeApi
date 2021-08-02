@@ -38,7 +38,7 @@ router.post(
     // console.log(postedDate);
     try {
       var sql =
-        "INSERT INTO allapplicant SET firstName = ?,middleName	= ?,lastName = ?, gender = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, currentAddress= ?, senioritylevel =? , message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
+        "INSERT INTO allapplicant SET firstName = ?,middleName	= ?,lastName = ?, gender = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, currentAddress= ?, senioritylevel =?, expectedSalary =?, message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
       await mysqlconnection.query(
         sql,
         [
@@ -53,6 +53,7 @@ router.post(
           data.city,
           data.currentAddress,
           data.senioritylevel,
+          data.expectedSalary,
           data.message,
           "http://" + req.headers.host + "/" + req.files.resume[0].path,
           "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
