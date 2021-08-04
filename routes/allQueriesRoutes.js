@@ -13,19 +13,29 @@ router.post("/", async (req, res) => {
   // console.log(postedDate);
   try {
     var sql =
+<<<<<<< HEAD
       "INSERT INTO allqueries SET firstName = ? email = ?, phone = ?, country = ?, city=?, status=?, message = ?, postedDate = ? ";
+=======
+      "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?, postedDate = ? ";
+>>>>>>> ef316d18677e8d942dfc7646e9e7fc56cb9fdb3b
     await mysqlconnection.query(
       sql,
       [
-        data.firstName,
-        data.lastName,
+        data.fullName,
         data.email,
         data.phone,
+<<<<<<< HEAD
         data.country,
         data.city,
        // data.subject,
         data.status,
+=======
+        data.city,
+        data.country,
+>>>>>>> ef316d18677e8d942dfc7646e9e7fc56cb9fdb3b
         data.message,
+        "notSeen",
+
         postedDate,
       ],
       (err, rows, fields) => {
@@ -163,18 +173,14 @@ router.patch("/status/:id", auth, async (req, res) => {
 
   try {
     var sql = "UPDATE allqueries set status = ? WHERE id = ?";
-    mysqlconnection.query(
-      sql,
-      [data.status, req.params.id],
-      (err, rows, fields) => {
-        if (!err) {
-          res.status(200).json({
-            status: "ok",
-            data: data,
-          });
-        } else console.log(err);
-      }
-    );
+    mysqlconnection.query(sql, ["seen", req.params.id], (err, rows, fields) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: data,
+        });
+      } else console.log(err);
+    });
   } catch (err) {
     res.json({
       message: err,
