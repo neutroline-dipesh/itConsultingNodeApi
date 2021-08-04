@@ -13,18 +13,18 @@ router.post("/", async (req, res) => {
   // console.log(postedDate);
   try {
     var sql =
-      "INSERT INTO allqueries SET firstName = ?,lastName = ?, email = ?, phone = ?, address = ?, subject = ?, status=?, message = ?, postedDate = ? ";
+      "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?, postedDate = ? ";
     await mysqlconnection.query(
       sql,
       [
-        data.firstName,
-        data.lastName,
+        data.fullName,
         data.email,
         data.phone,
-        data.address,
-        data.subject,
-        data.status,
+        data.city,
+        data.country,
         data.message,
+        "notSeen",
+
         postedDate,
       ],
       (err, rows, fields) => {
@@ -162,18 +162,14 @@ router.patch("/status/:id", auth, async (req, res) => {
 
   try {
     var sql = "UPDATE allqueries set status = ? WHERE id = ?";
-    mysqlconnection.query(
-      sql,
-      [data.status, req.params.id],
-      (err, rows, fields) => {
-        if (!err) {
-          res.status(200).json({
-            status: "ok",
-            data: data,
-          });
-        } else console.log(err);
-      }
-    );
+    mysqlconnection.query(sql, ["seen", req.params.id], (err, rows, fields) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: data,
+        });
+      } else console.log(err);
+    });
   } catch (err) {
     res.json({
       message: err,
