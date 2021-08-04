@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
   // console.log(postedDate);
   try {
     var sql =
-      "INSERT INTO allqueries SET firstName = ?,lastName = ?, email = ?, phone = ?, address = ?, subject = ?, status=?, message = ?, postedDate = ? ";
+      "INSERT INTO allqueries SET firstName = ? email = ?, phone = ?, country = ?, city=?, status=?, message = ?, postedDate = ? ";
     await mysqlconnection.query(
       sql,
       [
@@ -21,8 +21,9 @@ router.post("/", async (req, res) => {
         data.lastName,
         data.email,
         data.phone,
-        data.address,
-        data.subject,
+        data.country,
+        data.city,
+       // data.subject,
         data.status,
         data.message,
         postedDate,
