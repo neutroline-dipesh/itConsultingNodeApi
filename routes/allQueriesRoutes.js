@@ -1,10 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const mysqlconnection = require("../model/db");
+const path = require("path");
+const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 
+//for file upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/assets");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage: storage });
+
 //post allqueries
-router.post("/", async (req, res) => {
+router.post("/", upload.single("attachment"), async (req, res) => {
   let data = req.body;
   var date = new Date();
   var postedDate =
@@ -13,7 +26,7 @@ router.post("/", async (req, res) => {
   // console.log(postedDate);
   try {
     var sql =
-      "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?, postedDate = ? ";
+      "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?,attachment =?, postedDate = ? ";
     await mysqlconnection.query(
       sql,
       [
@@ -24,7 +37,7 @@ router.post("/", async (req, res) => {
         data.country,
         data.message,
         "notSeen",
-
+        "http://" + req.headers.host + "/" + req.file.path,
         postedDate,
       ],
       (err, rows, fields) => {
