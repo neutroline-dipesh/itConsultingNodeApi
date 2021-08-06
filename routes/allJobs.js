@@ -76,6 +76,27 @@ router.get("/", async (req, res) => {
   }
 });
 
+//get publised job form allJobs
+router.get("/publish/", async (req, res) => {
+  try {
+    var sql =
+      "SELECT * FROM alljobs WHERE visibility = 'Publish' ORDER BY id DESC";
+    mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({ 
+          status: "ok",
+          data: result,
+        });
+        // console.log(result);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
 //get by ID allqueries
 router.get("/:id", async (req, res) => {
   try {

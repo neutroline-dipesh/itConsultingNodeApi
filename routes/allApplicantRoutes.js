@@ -58,8 +58,8 @@ router.post(
           "http://" + req.headers.host + "/" + req.files.resume[0].path,
           "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
           data.jobTitle,
-          data.status,
-          data.approvelStatus,
+          "notSeen",
+          "notSeen",
           data.jobType,
           postedDate,
         ],
@@ -79,6 +79,26 @@ router.post(
     }
   }
 );
+
+//get allApplicant from allApplicant
+router.get("/", async (req, res) => {
+  try {
+    var sql = "SELECT * FROM allapplicant ORDER BY id DESC";
+    mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        // console.log(result);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
 
 //get internalJobs from allApplicant
 router.get("/internal", async (req, res) => {

@@ -5,8 +5,19 @@ const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 
+//for file upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/assets");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage: storage });
+
 //post requestTalent
-router.post("/", async (req, res) => {
+router.post("/", upload.single("attachment"), async (req, res) => {
   let data = req.body;
   var date = new Date();
   var postedDate =
@@ -15,7 +26,7 @@ router.post("/", async (req, res) => {
   // console.log(postedDate);
   try {
     var sql =
-      "INSERT INTO requesttalent SET firstName = ?,lastName	=?, email = ?, phone = ?,country = ?, city = ?, companyName=?,jobTitile=?,  message = ?, status=?, postedDate = ? ";
+      "INSERT INTO requesttalent SET firstName = ?,lastName	=?, email = ?, phone = ?,country = ?, city = ?, companyName=?,jobTitle=?,  message = ?,attachment =?, status=?, postedDate = ? ";
     await mysqlconnection.query(
       sql,
       [
@@ -26,10 +37,10 @@ router.post("/", async (req, res) => {
         data.country,
         data.city,
         data.companyName,
-        data.jobTitile,
+        data.jobTitle,
         data.message,
+        "http://" + req.headers.host + "/" + req.file.path,
         "notSeen",
-
         postedDate,
       ],
       (err, rows, fields) => {
