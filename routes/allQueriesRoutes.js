@@ -4,6 +4,8 @@ const mysqlconnection = require("../model/db");
 const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
+const fetch = require("node-fetch");
+const { stringify } = require("querystring");
 
 //for file upload
 const storage = multer.diskStorage({
@@ -24,31 +26,56 @@ router.post("/", upload.single("attachment"), async (req, res) => {
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
   // console.log(postedDate);
+
   try {
-    var sql =
-      "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?,attachment =?, postedDate = ? ";
-    await mysqlconnection.query(
-      sql,
-      [
-        data.fullName,
-        data.email,
-        data.phone,
-        data.city,
-        data.country,
-        data.message,
-        "notSeen",
-        "http://" + req.headers.host + "/" + req.file.path,
-        postedDate,
-      ],
-      (err, rows, fields) => {
-        if (!err) {
-          res.status(200).json({
-            status: "ok",
-            data: data,
-          });
-        } else console.log(err);
-      }
-    );
+    if (!req.body.captcha)
+      return res.json({ success: false, msg: "Please select captcha" });
+
+    // Secret key
+    const secretKey = "6Lca4-EbAAAAAJKjI_uGX5id8U0td8X2vo9bIlR8";
+
+    // Verify URL
+    const query = stringify({
+      secret: secretKey,
+      response: req.body.captcha,
+      remoteip: req.connection.remoteAddress,
+    });
+    const verifyURL = `https://google.com/recaptcha/api/siteverify?${query}`;
+
+    // Make a request to verifyURL
+    const body = await fetch(verifyURL).then((res) => res.json());
+
+    // If not successful
+    if (body.success !== undefined && !body.success) {
+      return res.json({ success: false, msg: "Failed captcha verification" });
+    } else {
+      var sql =
+        "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?,attachment =?, postedDate = ? ";
+      await mysqlconnection.query(
+        sql,
+        [
+          data.fullName,
+          data.email,
+          data.phone,
+          data.city,
+          data.country,
+          data.message,
+          "notSeen",
+          "http://" + req.headers.host + "/" + req.file.path,
+          postedDate,
+        ],
+        (err, rows, fields) => {
+          if (!err) {
+            return res.status(200).json({
+              status: "ok",
+              success: true,
+              msg: "Captcha passed",
+              data: data,
+            });
+          } else console.log(err);
+        }
+      );
+    }
   } catch (err) {
     res.json({
       message: err,
