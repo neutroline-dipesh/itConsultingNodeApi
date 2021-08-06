@@ -4,13 +4,6 @@ const mysqlconnection = require("../model/db");
 const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
-<<<<<<< HEAD
-const { stringify } = require('querystring');
-//post allqueries
-router.post("/", async (req, res) => {
-  
-
-=======
 const fetch = require("node-fetch");
 const { stringify } = require("querystring");
 
@@ -27,7 +20,6 @@ const upload = multer({ storage: storage });
 
 //post allqueries
 router.post("/", upload.single("attachment"), async (req, res) => {
->>>>>>> 98d79138611223ed673160a78991511fee64963d
   let data = req.body;
   var date = new Date();
   var postedDate =
@@ -36,51 +28,11 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   // console.log(postedDate);
 
   try {
-<<<<<<< HEAD
-    var sql =
-      "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?, postedDate = ? ";
-    await mysqlconnection.query(
-      sql,
-      [
-        data.fullName,
-        data.email,
-        data.phone,
-        data.city,
-        data.country,
-        data.message,
-        "notSeen",
-        postedDate,
-      ],
-      (err, rows, fields) => {
-        if (!err) {
-          res.status(200).json({
-            status: "ok",
-            data: data,
-          });
-        } else console.log(err);
-      }
-    );
-
-  //   if (!req.body.captcha)
-  //   return res.json({ success: false, msg: 'Please select captcha' });
- 
-  // const secretKey ="6LdEst4bAAAAANt5IFkNpjRjLWXEmKLvstTQjLcW";
-  // const query = stringify({
-  //   secret: secretKey,
-  //   response: req.body.captcha,
-  //   remoteip: req.connection.remoteAddress
-  // });
-  // const url = `https://www.google.com/recaptcha/api/siteverify?${query}`;
-   
-   
-  
-
-=======
     if (!req.body.captcha)
       return res.json({ success: false, msg: "Please select captcha" });
 
     // Secret key
-    const secretKey = "6Lca4-EbAAAAAJKjI_uGX5id8U0td8X2vo9bIlR8";
+    const secretKey = "6LdEst4bAAAAANt5IFkNpjRjLWXEmKLvstTQjLcW";
 
     // Verify URL
     const query = stringify({
@@ -124,14 +76,12 @@ router.post("/", upload.single("attachment"), async (req, res) => {
         }
       );
     }
->>>>>>> 98d79138611223ed673160a78991511fee64963d
   } catch (err) {
     res.json({
       message: err,
     });
   }
 });
-
 //get allqueries
 router.get("/", async (req, res) => {
   try {
