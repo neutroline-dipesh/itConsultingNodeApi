@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 const mysqlconnection = require("../model/db");
 const auth = require("../middlewares/checkAuth");
-
+const { stringify } = require('querystring');
 //post allqueries
 router.post("/", async (req, res) => {
+  
+
   let data = req.body;
   var date = new Date();
   var postedDate =
@@ -13,29 +15,17 @@ router.post("/", async (req, res) => {
   // console.log(postedDate);
   try {
     var sql =
-<<<<<<< HEAD
-      "INSERT INTO allqueries SET firstName = ? email = ?, phone = ?, country = ?, city=?, status=?, message = ?, postedDate = ? ";
-=======
       "INSERT INTO allqueries SET fullName = ?, email = ?, phone = ?, city = ?, country = ?,  message = ?, status=?, postedDate = ? ";
->>>>>>> ef316d18677e8d942dfc7646e9e7fc56cb9fdb3b
     await mysqlconnection.query(
       sql,
       [
         data.fullName,
         data.email,
         data.phone,
-<<<<<<< HEAD
-        data.country,
-        data.city,
-       // data.subject,
-        data.status,
-=======
         data.city,
         data.country,
->>>>>>> ef316d18677e8d942dfc7646e9e7fc56cb9fdb3b
         data.message,
         "notSeen",
-
         postedDate,
       ],
       (err, rows, fields) => {
@@ -47,6 +37,21 @@ router.post("/", async (req, res) => {
         } else console.log(err);
       }
     );
+
+  //   if (!req.body.captcha)
+  //   return res.json({ success: false, msg: 'Please select captcha' });
+ 
+  // const secretKey ="6LdEst4bAAAAANt5IFkNpjRjLWXEmKLvstTQjLcW";
+  // const query = stringify({
+  //   secret: secretKey,
+  //   response: req.body.captcha,
+  //   remoteip: req.connection.remoteAddress
+  // });
+  // const url = `https://www.google.com/recaptcha/api/siteverify?${query}`;
+   
+   
+  
+
   } catch (err) {
     res.json({
       message: err,
