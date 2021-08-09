@@ -13,6 +13,7 @@ router.post("/", auth, async (req, res) => {
 
   try {
     let data = req.body;
+    console.log(req.body);
     var sql1 = "SELECT MAX(id) +1 as id FROM alljobs";
     mysqlconnection.query(sql1, (err, result) => {
       if (!err) {
@@ -83,7 +84,7 @@ router.get("/publish/", async (req, res) => {
       "SELECT * FROM alljobs WHERE visibility = 'Publish' ORDER BY id DESC";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
-        res.status(200).json({ 
+        res.status(200).json({
           status: "ok",
           data: result,
         });
