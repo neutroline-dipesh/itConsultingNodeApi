@@ -32,7 +32,7 @@ router.post("/", upload.single("attachment"), async (req, res) => {
       return res.json({ success: false, msg: "Please select captcha" });
 
     // Secret key
-    const secretKey = "6Lca4-EbAAAAAJKjI_uGX5id8U0td8X2vo9bIlR8";
+    const secretKey = "6LdEst4bAAAAANt5IFkNpjRjLWXEmKLvstTQjLcW";
 
     // Verify URL
     const query = stringify({
@@ -82,7 +82,6 @@ router.post("/", upload.single("attachment"), async (req, res) => {
     });
   }
 });
-
 //get allqueries
 router.get("/", async (req, res) => {
   try {
