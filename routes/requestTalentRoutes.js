@@ -6,6 +6,7 @@ const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const fetch = require("node-fetch");
 const { stringify } = require("querystring");
+const nodemailer = require("nodemailer");
 
 //for file upload
 const storage = multer.diskStorage({
@@ -25,13 +26,63 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
-  // console.log(postedDate);
+  console.log(data);
+  const output = `
+  <p> You have a new Employee request </p>
+  <h3> Details </h3>
+  <ul>
+  <li> Name: ${data.firstName} ${data.lastName}</li>
+  <li> Email: ${data.email}</li>
+  <li> Phone: ${data.phone}</li>
+  <li> Country: ${data.country}</li>
+  <li> City: ${data.city}</li>
+  <li> Company Name: ${data.companyName}</li>
+  <li> JobTitle: ${data.jobTitle}</li>
+  <li> Message: ${data.message}</li>
+  </ul>
+  `;
+  
+  let smtpTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    port: 465,
+    auth: {
+      user: 'yamuna.neutroline@gmail.com',
+      pass: 'Working@Neutroline123',
+    }
+  });
+
+  let mailOptions = {
+    from: data.email,
+    to: 'yamuna.neutroline@gmail.com',
+    subject: `Employee Request from ${data.firstName} ${data.lastName}`,
+    html: output,
+    attachments: [
+      {
+          filename: req.file.name,
+          path: req.file.path
+      }
+  ]
+  };
+
+  smtpTransport.sendMail(mailOptions,(error,response)=>{
+    if(error){
+      res.send(error)
+      console.log(error)
+    }
+    else{
+      res.send('success')
+    }
+  });
+
+  smtpTransport.close();
+
   try {
     if (!req.body.captcha)
       return res.json({ success: false, msg: "Please select captcha" });
+      
 
     // Secret key
-    const secretKey = "6Lca4-EbAAAAAJKjI_uGX5id8U0td8X2vo9bIlR8";
+    const secretKey = "6LeYwOgbAAAAAGBay4fiR-aA6jeo1szYTWBTNtQO";
 
     // Verify URL
     const query = stringify({
@@ -50,6 +101,7 @@ router.post("/", upload.single("attachment"), async (req, res) => {
     } else {
       var sql =
         "INSERT INTO requesttalent SET firstName = ?,lastName	=?, email = ?, phone = ?,country = ?, city = ?, companyName=?,jobTitle=?,  message = ?,attachment =?, status=?, postedDate = ? ";
+        // console.log(sql);
       await mysqlconnection.query(
         sql,
         [
@@ -74,10 +126,12 @@ router.post("/", upload.single("attachment"), async (req, res) => {
               msg: "Captcha passed",
               data: data,
             });
+            console.log(data)
           } else console.log(err);
         }
       );
     }
+    
   } catch (err) {
     res.json({
       message: err,
