@@ -21,6 +21,8 @@ const upload = multer({ storage: storage });
 //post requestTalent
 router.post("/", upload.single("attachment"), async (req, res) => {
   let data = req.body;
+  console.log(req.body);
+  console.log(req.file);
   var date = new Date();
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -31,7 +33,7 @@ router.post("/", upload.single("attachment"), async (req, res) => {
       return res.json({ success: false, msg: "Please select captcha" });
 
     // Secret key
-    const secretKey = "6Lca4-EbAAAAAJKjI_uGX5id8U0td8X2vo9bIlR8";
+    const secretKey = "6LeYwOgbAAAAAGBay4fiR-aA6jeo1szYTWBTNtQO";
 
     // Verify URL
     const query = stringify({
@@ -62,6 +64,7 @@ router.post("/", upload.single("attachment"), async (req, res) => {
           data.companyName,
           data.jobTitle,
           data.message,
+          // "",
           "http://" + req.headers.host + "/" + req.file.path,
           "notSeen",
           postedDate,
