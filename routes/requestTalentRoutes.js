@@ -46,8 +46,8 @@ router.post("/", upload.single("attachment"), async (req, res) => {
     service: 'Gmail',
     port: 465,
     auth: {
-      user: 'yamuna.neutroline@gmail.com',
-      pass: 'Working@Neutroline123',
+      user: '', //put your email here
+      pass: '', //put your password here
     }
   });
 
