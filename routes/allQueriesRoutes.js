@@ -25,7 +25,12 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
+<<<<<<< HEAD
    console.log(data);
+=======
+  // console.log(postedDate);
+  
+>>>>>>> 29800f1b25ea1ca88fad820175cfc728cf9682f1
 
   try {
     if (!req.body.captcha)
