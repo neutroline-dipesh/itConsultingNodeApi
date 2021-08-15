@@ -28,6 +28,7 @@ const allJobsRouter = require("./routes/allJobs");
 const userRouter = require("./routes/userRoutes");
 const allApplicant = require("./routes/allApplicantRoutes");
 const requestTalentRouter = require("./routes/requestTalentRoutes");
+const externalApplicatnRouter = require("./routes/ExternalApplicantRoutes");
 
 //use all routes
 app.use("/allQueries", allQueriesRouter);
@@ -37,6 +38,7 @@ app.use("/contract", contractRouter);
 app.use("/allJobs", allJobsRouter);
 app.use("/user", userRouter);
 app.use("/requestTalent", requestTalentRouter);
+app.use("/externalApplicant", externalApplicatnRouter);
 
 app.listen(PORT, () => {
   console.log("Server start at port : " + PORT);

@@ -26,7 +26,6 @@ router.post("/", upload.single("attachment"), async (req, res) => {
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
   // console.log(postedDate);
-  
 
   try {
     if (!req.body.captcha)
@@ -115,7 +114,7 @@ router.get("/notSeenQueries", async (req, res) => {
           status: "ok",
           data: result,
         });
-        console.log(result.length);
+        console.log(result);
         // console.log(output);
       } else console.log(err);
     });

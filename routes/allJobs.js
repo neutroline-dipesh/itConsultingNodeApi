@@ -22,7 +22,7 @@ router.post("/", auth, async (req, res) => {
         // console.log(id);
 
         var sql =
-          "INSERT INTO alljobs SET jobId = ? ,jobTitle = ?, jobSubtitle = ?, department = ?, jobType = ?, country = ?, state=?, city = ?, description = ?, publishBy = ?, visibility = ?, postedDate = ?";
+          "INSERT INTO alljobs SET jobId = ? ,jobTitle = ?, jobSubtitle = ?, department = ?, jobType = ?, country = ?, state=?, city = ?, description = ?, publishBy = ?, visibility = ?,workType= ?,  postedDate = ?";
         mysqlconnection.query(
           sql,
           [
@@ -37,6 +37,7 @@ router.post("/", auth, async (req, res) => {
             data.description,
             data.publishBy,
             data.visibility,
+            data.workType,
             postedDate,
           ],
           (err, rows, fields) => {
@@ -109,6 +110,50 @@ router.get("/:id", async (req, res) => {
           data: result,
         });
         // console.log(result);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
+//get number of internaljobs from allJObs
+router.get("/internal/totalJobs", async (req, res) => {
+  try {
+    var sql =
+      "SELECT COUNT(jobId) as totalNumber FROM alljobs WHERE workType = 'Internal' ";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
+//get number of contractJobs from allJObs
+router.get("/contract/totalJobs", async (req, res) => {
+  try {
+    var sql =
+      "SELECT COUNT(jobId) as totalNumber FROM alljobs WHERE workType = 'Contract' ";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
       } else console.log(err);
     });
   } catch (err) {

@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-//post internalJobs
+//post externalApplicant
 router.post(
   "/",
   upload.fields([
@@ -31,44 +31,35 @@ router.post(
   ]),
   async (req, res) => {
     let data = req.body;
-    console.log(data);
     var date = new Date();
     var postedDate =
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     // let postedDate = new Date();
     // console.log(postedDate);
+
     try {
       var sql =
-        "INSERT INTO allapplicant SET firstName = ?,lastName = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, senioritylevel =?, expectedSalary =?, salaryType=?, message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
+        "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
       await mysqlconnection.query(
         sql,
         [
-          data.firstName,
-
-          data.lastName,
-
+          data.fullName,
           data.gmail,
           data.phone,
-          data.country,
-          data.state,
-          data.city,
-
-          data.senioritylevel,
-          data.expectedSalary,
-          data.salaryType,
           data.message,
           "http://" + req.headers.host + "/" + req.files.resume[0].path,
           "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
-          data.jobTitle,
-          "notSeen",
-          "notSeen",
           data.jobType,
+          "notSeen",
+
           postedDate,
         ],
         (err, rows, fields) => {
           if (!err) {
-            res.status(200).json({
+            return res.status(200).json({
               status: "ok",
+              success: true,
+              msg: "Captcha passed",
               data: data,
             });
           } else console.log(err);
@@ -82,10 +73,10 @@ router.post(
   }
 );
 
-//get allApplicant from allApplicant
+//get externalAppliacnt from allApplicant
 router.get("/", async (req, res) => {
   try {
-    var sql = "SELECT * FROM allapplicant ORDER BY id DESC";
+    var sql = "SELECT * FROM externalapplicant ORDER BY id DESC";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({
@@ -102,52 +93,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-//get internalJobs from allApplicant
-router.get("/internal", async (req, res) => {
-  try {
-    var sql =
-      "SELECT * FROM allapplicant where jobType = 'Internal' ORDER BY id DESC";
-    mysqlconnection.query(sql, (err, result) => {
-      if (!err) {
-        res.status(200).json({
-          status: "ok",
-          data: result,
-        });
-        // console.log(result);
-      } else console.log(err);
-    });
-  } catch (err) {
-    res.json({
-      message: err,
-    });
-  }
-});
-
-//get contractJobs from allApplicant
-router.get("/contract", async (req, res) => {
-  try {
-    var sql =
-      "SELECT * FROM allapplicant where jobType = 'Contract' ORDER BY id DESC";
-    mysqlconnection.query(sql, (err, result) => {
-      if (!err) {
-        res.status(200).json({
-          status: "ok",
-          data: result,
-        });
-        // console.log(result);
-      } else console.log(err);
-    });
-  } catch (err) {
-    res.json({
-      message: err,
-    });
-  }
-});
-
-//get by ID Applicant
+//get by ID externalApplicant
 router.get("/:id", async (req, res) => {
   try {
-    var sql = "SELECT * FROM allapplicant WHERE id = ?";
+    var sql = "SELECT * FROM externalapplicant WHERE id = ?";
     mysqlconnection.query(sql, [req.params.id], (err, result) => {
       if (!err) {
         res.status(200).json({
@@ -164,47 +113,61 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//update approvelStatus from allApplicant
-router.patch("/approvelStatus/:id", auth, async (req, res) => {
-  // console.log(req.params.id);
+//get number of ExternalApplicant from External
+router.get("/totalExternal/totalNumber", async (req, res) => {
+  try {
+    var sql = "SELECT COUNT(fullName) as totalNumber FROM externalapplicant";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
 
+//get number of notSeen External form allApplicant
+router.get("/status/notSeen", async (req, res) => {
+  try {
+    var sql =
+      "SELECT COUNT(status) as notSeenMessage FROM externalapplicant WHERE status = 'notSeen'";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
+//update Status from externalAllApplicant
+router.patch("/status/:id", auth, async (req, res) => {
   let data = req.body;
 
   try {
-    var sql =
-      "UPDATE allapplicant set status = ?,approvelStatus = ? WHERE id = ?";
-    mysqlconnection.query(
-      sql,
-      ["seen", data.approvelStatus, req.params.id],
-      (err, rows, fields) => {
-        if (!err) {
-          res.status(200).json({
-            status: "ok",
-            data: data,
-          });
-        } else console.log(err);
-      }
-    );
-  } catch (err) {
-    res.json({
-      message: err,
-    });
-  }
-});
-
-//get number of notSeen internal form allApplicant
-router.get("/internal/notSeen", async (req, res) => {
-  try {
-    var sql =
-      "SELECT COUNT(status) as notSeenMessage FROM allapplicant WHERE status = 'notSeen' and jobType = 'Internal'";
-    const output = mysqlconnection.query(sql, (err, result) => {
+    var sql = "UPDATE externalapplicant set status = ? WHERE id = ?";
+    mysqlconnection.query(sql, ["seen", req.params.id], (err, rows, fields) => {
       if (!err) {
         res.status(200).json({
           status: "ok",
-          data: result,
+          data: data,
         });
-        console.log(result);
-        // console.log(output);
       } else console.log(err);
     });
   } catch (err) {
@@ -214,32 +177,10 @@ router.get("/internal/notSeen", async (req, res) => {
   }
 });
 
-//get number of notSeen Contract form allApplicant
-router.get("/contract/notSeen", async (req, res) => {
-  try {
-    var sql =
-      "SELECT COUNT(status) as notSeenMessage FROM allapplicant WHERE status = 'notSeen' and jobType = 'Contract'";
-    const output = mysqlconnection.query(sql, (err, result) => {
-      if (!err) {
-        res.status(200).json({
-          status: "ok",
-          data: result,
-        });
-        console.log(result);
-        // console.log(output);
-      } else console.log(err);
-    });
-  } catch (err) {
-    res.json({
-      message: err,
-    });
-  }
-});
-
-//delete by ID allapplicant
+//delete by ID externalApplicant
 router.delete("/:id", auth, async (req, res) => {
   try {
-    var sql = "DELETE FROM allapplicant WHERE id = ?";
+    var sql = "DELETE FROM externalapplicant WHERE id = ?";
     mysqlconnection.query(sql, [req.params.id], (err, result) => {
       if (!err) {
         res.status(200).json({
