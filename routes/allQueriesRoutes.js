@@ -32,7 +32,7 @@ router.post("/", upload.single("attachment"), async (req, res) => {
       return res.json({ success: false, msg: "Please select captcha" });
 
     // Secret key
-    const secretKey = "6LdEst4bAAAAANt5IFkNpjRjLWXEmKLvstTQjLcW";
+    const secretKey = "6LeYwOgbAAAAAGBay4fiR-aA6jeo1szYTWBTNtQO";
 
     // Verify URL
     const query = stringify({
@@ -43,10 +43,10 @@ router.post("/", upload.single("attachment"), async (req, res) => {
     const verifyURL = `https://google.com/recaptcha/api/siteverify?${query}`;
 
     // Make a request to verifyURL
-    const body = await fetch(verifyURL).then((res) => res.json());
+    const verifyrecaptcha = await fetch(verifyURL).then((res) => res.json());
 
     // If not successful
-    if (body.success !== undefined && !body.success) {
+    if (verifyrecaptcha.success !== undefined && !verifyrecaptcha.success) {
       return res.json({ success: false, msg: "Failed captcha verification" });
     } else {
       var sql =
@@ -76,6 +76,7 @@ router.post("/", upload.single("attachment"), async (req, res) => {
         }
       );
     }
+   
   } catch (err) {
     res.json({
       message: err,
