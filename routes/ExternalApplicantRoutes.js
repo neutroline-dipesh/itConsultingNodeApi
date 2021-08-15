@@ -113,6 +113,49 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//get number of ExternalApplicant from External
+router.get("/totalExternal/totalNumber", async (req, res) => {
+  try {
+    var sql = "SELECT COUNT(fullName) as totalNumber FROM externalapplicant";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
+//get number of notSeen External form allApplicant
+router.get("/status/notSeen", async (req, res) => {
+  try {
+    var sql =
+      "SELECT COUNT(status) as notSeenMessage FROM externalapplicant WHERE status = 'notSeen'";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
 //update Status from externalAllApplicant
 router.patch("/status/:id", auth, async (req, res) => {
   let data = req.body;

@@ -184,6 +184,49 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//get number of notSeen from status form allQueries
+router.get("/status/notSeen", async (req, res) => {
+  try {
+    var sql =
+      "SELECT COUNT(status) as notSeenMessage FROM requesttalent WHERE status = 'notSeen' ";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
+//get number of Employers from Employers
+router.get("/totalEmployers/totalNumber", async (req, res) => {
+  try {
+    var sql = "SELECT COUNT(firstName) as totalNumber FROM requesttalent";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
 //get by ID requestTalent
 router.delete("/:id", auth, async (req, res) => {
   try {
