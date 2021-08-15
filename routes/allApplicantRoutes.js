@@ -105,7 +105,7 @@ router.get("/", async (req, res) => {
 router.get("/internal", async (req, res) => {
   try {
     var sql =
-      "SELECT * FROM allapplicant where jobType = 'internal' ORDER BY id DESC";
+      "SELECT * FROM allapplicant where jobType = 'Internal' ORDER BY id DESC";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({
@@ -126,7 +126,7 @@ router.get("/internal", async (req, res) => {
 router.get("/contract", async (req, res) => {
   try {
     var sql =
-      "SELECT * FROM allapplicant where jobType = 'contract' ORDER BY id DESC";
+      "SELECT * FROM allapplicant where jobType = 'Contract' ORDER BY id DESC";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({
@@ -184,6 +184,50 @@ router.patch("/approvelStatus/:id", auth, async (req, res) => {
         } else console.log(err);
       }
     );
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
+//get number of notSeen internal form allApplicant
+router.get("/internal/notSeen", async (req, res) => {
+  try {
+    var sql =
+      "SELECT COUNT(status) as notSeenMessage FROM allapplicant WHERE status = 'notSeen' and jobType = 'Internal'";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+
+//get number of notSeen Contract form allApplicant
+router.get("/contract/notSeen", async (req, res) => {
+  try {
+    var sql =
+      "SELECT COUNT(status) as notSeenMessage FROM allapplicant WHERE status = 'notSeen' and jobType = 'Contract'";
+    const output = mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        console.log(result);
+        // console.log(output);
+      } else console.log(err);
+    });
   } catch (err) {
     res.json({
       message: err,
