@@ -31,6 +31,7 @@ router.post(
   ]),
   async (req, res) => {
     let data = req.body;
+    console.log(data);
     var date = new Date();
     var postedDate =
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
