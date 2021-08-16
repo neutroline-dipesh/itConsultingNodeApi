@@ -4,6 +4,7 @@ const mysqlconnection = require("../model/db");
 const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
+const nodeMailer = require("nodemailer");
 
 //for file upload
 const storage = multer.diskStorage({
@@ -15,21 +16,22 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
+const files=upload.fields([
+  {
+    name: "resume",
+    maxCount: 1,
+  },
+  {
+    name: "coverletter",
+    maxCount: 1,
+  },
+])
 
 //post internalJobs
 router.post(
   "/",
-  upload.fields([
-    {
-      name: "resume",
-      maxCount: 1,
-    },
-    {
-      name: "coverletter",
-      maxCount: 1,
-    },
-  ]),
-  async (req, res) => {
+  files,
+   async (req, res) => {
     let data = req.body;
     console.log(data);
     var date = new Date();
@@ -37,6 +39,59 @@ router.post(
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     // let postedDate = new Date();
     // console.log(postedDate);
+
+    let setpTransport = nodeMailer.createTransport({
+      service: "gmail",
+      port: 465,
+      auth: {
+        user: "yamuna.neutroline@gmail.com",
+        pass: "Working@Neutroline123",
+      },
+    });
+    let mailOptions = {
+      from: data.email,
+      to: "yamuna.neutroline@gmail.com",
+      subject: `Job Application from ${data.firstName} ${data.lastName}`,
+      html: `
+      <h1>Information</h1>
+      <ul>
+      <li> Name: ${data.firstName} ${data.lastName}</li>
+      <li> Email: ${data.gmail}</li>
+      <li> Phone: ${data.phone}</li>
+      <li> Country: ${data.country}</li>
+      <li> State: ${data.state}</li>
+      <li> City: ${data.city}</li>
+      <li> Seniority Level: ${data.senioritylevel}</li>
+      <li> Salary: ${data.expectedSalary}</li>
+      <li> Salary Type: ${data.salaryType}</li>
+      <li> Message: ${data.message}</li>
+      <li> JobTitle: ${data.jobTitle}</li>
+      <li> JobType: ${data.jobType}</li>
+      
+      </ul>
+      <h3>Message</h3>
+      <p>${data.message}</p>
+      
+      `,
+      attachments: [
+        {
+          filename: req.files.resume[0].originalname,
+          path: req.files.resume[0].path,
+        },
+        {
+          filename: req.files.coverletter[0].originalname,
+          path: req.files.coverletter[0].path,
+        },
+      ],
+    };
+    setpTransport.sendMail(mailOptions, (error, response) => {
+      if (error) {
+        res.send(error);
+      } else {
+        res.send("success");
+      }
+    });
+
     try {
       var sql =
         "INSERT INTO allapplicant SET firstName = ?,lastName = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, senioritylevel =?, expectedSalary =?, salaryType=?, message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
