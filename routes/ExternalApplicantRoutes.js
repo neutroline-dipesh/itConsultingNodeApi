@@ -49,25 +49,27 @@ router.post(
     service:'gmail',
     port:465,
     auth:{
-      user:'pramila.neutroline@gmail.com',
-      pass:'Neutroline1pk',
+      user:'',
+      pass:'',
     }
   });
   let mailOptions={
-    from:data.email,
+    from:data.gmail,
     to:'pramila.neutroline@gmail.com',
-    subject:`Message from ${data.fullName}`,
+    subject:`Message from ${data.fullName} for finding new position`,
     html:`
     <h1>Information</h1>
     <ul>
+
     <li>Name:${data.fullName}</li>
     <li>Phone:${data.phone}</li>
     <li>JobType:${data.jobType}</li>
-    
+    <li>Gmail:${data.gmail}</li>
+
     </ul>
-    <h3>Message</h3>
+    <h1>Message</h1>
     <p>${data.message}</p>
-    
+    <h4>Attachment </h4>
     `,
      attachments:[
       {
