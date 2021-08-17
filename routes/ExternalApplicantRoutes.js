@@ -4,45 +4,100 @@ const mysqlconnection = require("../model/db");
 const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
-
+const nodeMailer = require("nodemailer");
 //for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/assets");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    console.log(file);
+    
+    cb(null, file.fieldname +'-'+ Date.now() + path.extname(file.originalname));
   },
 });
 const upload = multer({ storage: storage });
+const files=upload.fields([
+  {
+    name: "resume",
+    maxCount: 1,
+  },
+  {
+    name: "coverletter",
+    maxCount: 1,
+  },
+])
 
 //post externalApplicant
 router.post(
   "/",
-  upload.fields([
-    {
-      name: "resume",
-      maxCount: 1,
-    },
-    {
-      name: "coverletter",
-      maxCount: 1,
-    },
-  ]),
+ files,
   async (req, res) => {
     let data = req.body;
-    var date = new Date();
+     var date = new Date();
     var postedDate =
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+      console.log(data)
+      console.log(req.files)
     // let postedDate = new Date();
     // console.log(postedDate);
+   
+   
+    
 
+  let setpTransport=nodeMailer.createTransport({
+    service:'gmail',
+    port:465,
+    auth:{
+      user:'',
+      pass:'',
+    }
+  });
+  let mailOptions={
+    from:data.gmail,
+    to:'pramila.neutroline@gmail.com',
+    subject:`Message from ${data.fullName} for finding new position`,
+    html:`
+    <h1>Information</h1>
+    <ul>
+
+    <li>Name:${data.fullName}</li>
+    <li>Phone:${data.phone}</li>
+    <li>JobType:${data.jobType}</li>
+    <li>Gmail:${data.gmail}</li>
+
+    </ul>
+    <h1>Message</h1>
+    <p>${data.message}</p>
+    <h4>Attachment </h4>
+    `,
+     attachments:[
+      {
+        filename:req.files.resume[0].originalname,
+        path:req.files.resume[0].path
+      }, 
+      {
+        filename:req.files.coverletter[0].originalname,
+        path:req.files.coverletter[0].path
+      },    
+    ],
+  }
+  setpTransport.sendMail(mailOptions,(error,response)=>
+  {
+if(error)
+{
+  res.send(error)
+}
+else{
+  res.send('success')
+}
+  })
     try {
       var sql =
         "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
       await mysqlconnection.query(
         sql,
-        [
+    [ 
           data.fullName,
           data.gmail,
           data.phone,
