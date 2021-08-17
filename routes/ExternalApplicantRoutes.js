@@ -42,20 +42,18 @@ router.post(
     // let postedDate = new Date();
     // console.log(postedDate);
    
-   
-    
-
   let setpTransport=nodeMailer.createTransport({
-    service:'gmail',
+    service:'Gmail',
     port:465,
     auth:{
-      user:'',
-      pass:'',
+      user:'pramila.neutroline@gmail.com',
+      pass:'Neutroline1pk',
     }
   });
   let mailOptions={
     from:data.gmail,
     to:'pramila.neutroline@gmail.com',
+
     subject:`Message from ${data.fullName} for finding new position`,
     html:`
     <h1>Information</h1>
@@ -82,7 +80,7 @@ router.post(
       },    
     ],
   }
-  setpTransport.sendMail(mailOptions,(error,response)=>
+  setpTransport.sendMail(mailOptions,(error,res)=>
   {
 if(error)
 {
