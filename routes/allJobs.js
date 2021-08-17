@@ -58,6 +58,46 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+//get all Internal jobs from allJObs
+router.get("/internal", async (req, res) => {
+  try {
+    var sql =
+      "SELECT * FROM alljobs WHERE workType = 'Internal' ORDER BY id DESC";
+    mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        // console.log(result);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+//get all Contract jobs from allJObs
+router.get("/contract", async (req, res) => {
+  try {
+    var sql =
+      "SELECT * FROM alljobs WHERE workType = 'Contract' ORDER BY id DESC";
+    mysqlconnection.query(sql, (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          status: "ok",
+          data: result,
+        });
+        // console.log(result);
+      } else console.log(err);
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
 //get allqueries
 router.get("/", async (req, res) => {
   try {
