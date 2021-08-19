@@ -5,19 +5,38 @@ const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const nodeMailer = require("nodemailer");
+const { google } = require("googleapis");
+const fs = require("fs");
+
+//Add Credentials for google api
+const Client_id =
+  "706645762043-6as1bcbbdticdes3lbl8mekjb8u3u4fc.apps.googleusercontent.com";
+const Client_Secret = "s7Yq5ZTe-zSyOFerzg3oGWfp";
+const Redirect_uri = "https://developers.google.com/oauthplayground";
+const Refresh_token =
+  "1//04FC6pW4ys5kHCgYIARAAGAQSNwF-L9IrGc7tL5MkRLQkMdCVAOgVDIWfF3a9gh9MkJFzG5aSsIq2s59riJ86OsZ_AW9rJVw6Shc";
+
+const oauth2Client = new google.auth.OAuth2(
+  Client_id,
+  Client_Secret,
+  Redirect_uri[0]
+);
+oauth2Client.setCredentials({ refresh_token: Refresh_token });
+
 //for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/assets");
   },
   filename: (req, file, cb) => {
-    console.log(file);
-    
-    cb(null, file.fieldname +'-'+ Date.now() + path.extname(file.originalname));
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 const upload = multer({ storage: storage });
-const files=upload.fields([
+const files = upload.fields([
   {
     name: "resume",
     maxCount: 1,
@@ -26,36 +45,62 @@ const files=upload.fields([
     name: "coverletter",
     maxCount: 1,
   },
-])
+]);
 
 //post externalApplicant
-router.post(
-  "/",
- files,
-  async (req, res) => {
-    let data = req.body;
-     var date = new Date();
-    var postedDate =
-      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-      console.log(data)
-      console.log(req.files)
-    // let postedDate = new Date();
-    // console.log(postedDate);
-   
-  let setpTransport=nodeMailer.createTransport({
-    service:'Gmail',
-    port:465,
-    auth:{
-      user:'pramila.neutroline@gmail.com',
-      pass:'Neutroline1pk',
-    }
-  });
-  let mailOptions={
-    from:data.gmail,
-    to:'pramila.neutroline@gmail.com',
 
-    subject:`Message from ${data.fullName} for finding new position`,
-    html:`
+const google_upload = (originalName, destination, mimeType, parents) => {
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
+  });
+  const fileMetadata = {
+    name: originalName,
+    mimetype: mimeType,
+    parents: parents,
+  };
+  const media = {
+    mimetype: mimeType,
+    body: destination,
+  };
+  drive.files.create(
+    {
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    },
+    (err, response) => {
+      if (!err) {
+        console.log(response);
+      } else {
+        console.log(err);
+      }
+    }
+  );
+};
+router.post("/", files, async (req, res) => {
+  let data = req.body;
+  var date = new Date();
+  var postedDate =
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  // console.log(data)
+  // console.log(req.files)
+  // let postedDate = new Date();
+  // console.log(postedDate);
+
+  let setpTransport = nodeMailer.createTransport({
+    service: "Gmail",
+    port: 465,
+    auth: {
+      user: "pramila.neutroline@gmail.com",
+      pass: "Neutroline1pk",
+    },
+  });
+  let mailOptions = {
+    from: data.gmail,
+    to: "pramila.neutroline@gmail.com",
+    subject: `Message from ${data.fullName} for finding new position`,
+    html: `
     <h1>Information</h1>
     <ul>
 
@@ -69,62 +114,71 @@ router.post(
     <p>${data.message}</p>
     <h4>Attachment </h4>
     `,
-     attachments:[
+    attachments: [
       {
-        filename:req.files.resume[0].originalname,
-        path:req.files.resume[0].path
-      }, 
+        filename: req.files.resume[0].originalname,
+        path: req.files.resume[0].path,
+      },
       {
-        filename:req.files.coverletter[0].originalname,
-        path:req.files.coverletter[0].path
-      },    
+        filename: req.files.coverletter[0].originalname,
+        path: req.files.coverletter[0].path,
+      },
     ],
-  }
-  setpTransport.sendMail(mailOptions,(error,res)=>
-  {
-if(error)
-{
-  res.send(error)
-}
-else{
-  res.send('success')
-}
-  })
-    try {
-      var sql =
-        "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
-      await mysqlconnection.query(
-        sql,
-    [ 
-          data.fullName,
-          data.gmail,
-          data.phone,
-          data.message,
-          "http://" + req.headers.host + "/" + req.files.resume[0].path,
-          "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
-          data.jobType,
-          "notSeen",
-
-          postedDate,
-        ],
-        (err, rows, fields) => {
-          if (!err) {
-            return res.status(200).json({
-              status: "ok",
-              success: true,
-              msg: "Captcha passed",
-              data: data,
-            });
-          } else console.log(err);
-        }
-      );
-    } catch (err) {
-      res.json({
-        message: err,
-      });
+  };
+  setpTransport.sendMail(mailOptions, (error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("success");
     }
+  });
+
+  google_upload(
+    req.files.resume[0].originalname + "  " + ` ${data.fullName} `,
+    fs.createReadStream(req.files.resume[0].path),
+    req.files.resume[0].mimetype,
+    ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
+  );
+  google_upload(
+    req.files.coverletter[0].originalname + "  " + ` ${data.fullName} `,
+    fs.createReadStream(req.files.coverletter[0].path),
+    req.files.coverletter[0].mimetype,
+    ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
+  );
+  try {
+    var sql =
+      "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
+    await mysqlconnection.query(
+      sql,
+      [
+        data.fullName,
+        data.gmail,
+        data.phone,
+        data.message,
+        "http://" + req.headers.host + "/" + req.files.resume[0].path,
+        "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
+        data.jobType,
+        "notSeen",
+
+        postedDate,
+      ],
+      (err, rows, fields) => {
+        if (!err) {
+          return res.status(200).json({
+            status: "ok",
+            success: true,
+            msg: "Captcha passed",
+            data: data,
+          });
+        } else console.log(err);
+      }
+    );
+  } catch (err) {
+    res.json({
+      message: err,
+    });
   }
-);
+});
 
 //get externalAppliacnt from allApplicant
 router.get("/", async (req, res) => {
