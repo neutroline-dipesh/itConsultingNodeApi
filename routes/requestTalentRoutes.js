@@ -8,8 +8,6 @@ const fetch = require("node-fetch");
 const { stringify } = require("querystring");
 const nodemailer = require("nodemailer");
 
-
-
 //for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -127,9 +125,9 @@ img{
     service: "Gmail",
     port: 465,
     auth: {
-      user: 'yamuna.neutroline@gmail.com',
-      pass: 'Neutroline@Neutroline123',
-    }
+      user: "yamuna.neutroline@gmail.com",
+      pass: "Neutroline@Neutroline123",
+    },
   });
 
   let mailOptions = {
@@ -143,10 +141,10 @@ img{
         path: req.file.path,
       },
       {
-        filename: 'logo.jpg',
-                path: `${__dirname}/../public/assets/logo.png`,
-                cid: 'logo' 
-      }
+        filename: "logo.jpg",
+        path: `${__dirname}/../public/assets/logo.png`,
+        cid: "logo",
+      },
     ],
   };
 
