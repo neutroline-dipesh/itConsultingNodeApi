@@ -30,27 +30,104 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   // let postedDate = new Date();
   console.log(data);
   const output = `
-  <p> You have a new Employee request </p>
-  <h3> Details </h3>
-  <ul>
-  <li> Name: ${data.firstName} ${data.lastName}</li>
-  <li> Email: ${data.email}</li>
-  <li> Phone: ${data.phone}</li>
-  <li> Country: ${data.country}</li>
-  <li> City: ${data.city}</li>
-  <li> Company Name: ${data.companyName}</li>
-  <li> JobTitle: ${data.jobTitle}</li>
-  <li> Message: ${data.message}</li>
-  </ul>
+ 
+  <html>
+  <head>
+  <style>
+table {
+  font-family: arial, sans-serif;
+  font-size: 16px;
+  width: 80%;
+  position:relative;
+  margin-left:10%;
+}
+
+td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr{
+  background-color: #dddddd;
+}
+h1{
+  color: #3e7aba;
+  text-align:center;
+}
+img{
+  height: auto;
+  width: 200px;
+  margin-left:35%;
+
+}
+.bodyContainer{
+  width: 80%;
+  height: auto;
+  background-color:#f1f1f1;
+  padding: 2rem;
+  
+}
+.footerText{
+  color: #3e7aba;
+  text-align:center;
+}
+</style>
+  </head>
+  <body>
+  <div class ="bodyContainer">
+  <img src="cid:logo" alt="logo"/>
+  <h1> You have a new Employee request!!</h1>
+  
+  <table class = "table">
+  <tbody>
+    <tr>
+      <td>Name: </td>
+      <td>${data.firstName} ${data.lastName}</td>
+    </tr>
+    <tr>
+      <td>Email: </td>
+      <td>${data.email}</td>
+    </tr>
+    <tr>
+      <td>Phone: </td>
+      <td>${data.phone}</td>
+    </tr>
+    <tr>
+      <td>Country: </td>
+      <td>${data.country}</td>
+    </tr>
+    <tr>
+      <td>City: </td>
+      <td>${data.city}</td>
+    </tr>
+    <tr>
+      <td>Company Name: </td>
+      <td>${data.companyName}</td>
+    </tr>
+    <tr>
+      <td>Job Title: </td>
+      <td>${data.jobTitle}</td>
+    </tr>
+    <tr>
+      <td>Message: </td>
+      <td>${data.message}</td>
+    </tr>
+  </tbody>
+</table>
+<div class="footerText">©Neutrosys Pvt Ltd.</div>
+</div>
+</body>
+</html>
   `;
 
   let smtpTransport = nodemailer.createTransport({
     service: "Gmail",
     port: 465,
     auth: {
-      user: 'yamuna.neutroline@gmail.com',
-      pass: 'Working@Neutroline123',
-    }
+      user: "yamuna.neutroline@gmail.com",
+      pass: "Neutroline@Neutroline123",
+    },
   });
 
   let mailOptions = {
@@ -62,6 +139,11 @@ router.post("/", upload.single("attachment"), async (req, res) => {
       {
         filename: req.file.name,
         path: req.file.path,
+      },
+      {
+        filename: "logo.jpg",
+        path: `${__dirname}/../public/assets/logo.png`,
+        cid: "logo",
       },
     ],
   };
