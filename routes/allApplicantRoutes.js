@@ -189,7 +189,7 @@ router.post("/", files, async (req, res) => {
     },
   });
   let mailOptions = {
-    from: data.email,
+    from: data.gmail,
     to: NodeMailerConfig.user,
     subject: `Job Application from ${data.firstName} ${data.lastName}`,
     html: output,

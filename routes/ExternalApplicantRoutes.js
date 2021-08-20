@@ -6,6 +6,24 @@ const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const nodeMailer = require("nodemailer");
 const NodeMailerConfig = require("../config/nodemailer.config");
+const { google } = require("googleapis");
+const fs = require("fs");
+const nodemailerConfig = require("../config/nodemailer.config");
+
+//Add Credentials for google api
+const Client_id =
+  "706645762043-6as1bcbbdticdes3lbl8mekjb8u3u4fc.apps.googleusercontent.com";
+const Client_Secret = "s7Yq5ZTe-zSyOFerzg3oGWfp";
+const Redirect_uri = "https://developers.google.com/oauthplayground";
+const Refresh_token =
+  "1//04FC6pW4ys5kHCgYIARAAGAQSNwF-L9IrGc7tL5MkRLQkMdCVAOgVDIWfF3a9gh9MkJFzG5aSsIq2s59riJ86OsZ_AW9rJVw6Shc";
+
+const oauth2Client = new google.auth.OAuth2(
+  Client_id,
+  Client_Secret,
+  Redirect_uri[0]
+);
+oauth2Client.setCredentials({ refresh_token: Refresh_token });
 
 //for file upload
 const storage = multer.diskStorage({
@@ -32,20 +50,118 @@ const files = upload.fields([
 ]);
 
 //post externalApplicant
-router.post(
-  "/",
- files,
-  async (req, res) => {
-    let data = req.body;
-     var date = new Date();
-    var postedDate =
-      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-      console.log(data)
-      console.log(req.files)
-    // let postedDate = new Date();
-    // console.log(postedDate);
-   
-    const output = `
+
+const google_upload = (originalName, destination, mimeType,id) => {
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
+  });
+  const fileMetadata = {
+    name: originalName,
+    mimetype: mimeType,
+   parents:id
+  };
+  const media = {
+    mimetype: mimeType,
+    body: destination,
+  };
+  drive.files.create(
+    {
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    },
+    (err, response) => {
+      if (!err) {
+     //  console.log(response);
+      } else {
+        console.log(err);
+      }
+    }
+  );
+};
+
+const create_folder=(folder_name,mimeType,parents,resumeoriginalname,resumedestination,resumefilemimetype,
+  coverletteroriginalname,coverletterdestination,coverletterfilemimetype )=>
+{
+  
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
+  });
+  const fileMetadata = {
+        name:folder_name,
+        mimeType:mimeType,
+        parents: parents,
+      };
+
+
+      drive.files.create(
+            {
+              resource: fileMetadata,
+              fields: "id",
+            },
+            (err, response) => {
+              if (!err) {
+                
+                const id=response.data.id;
+                google_upload(
+                  
+                  resumeoriginalname , 
+                    resumedestination,
+                    resumefilemimetype,
+                    [id]
+                  ); 
+
+                  google_upload(
+                  
+                    coverletteroriginalname , 
+                      coverletterdestination,
+                      coverletterfilemimetype,
+                      [id]
+                    ); 
+                
+              } else {
+                console.log(err);
+              }
+            }
+          );
+}
+
+
+
+
+router.post("/", files, async (req, res) => {
+  let data = req.body;
+  var date = new Date();
+  var postedDate =
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
+  });
+  
+  create_folder(`${data.fullName}`  ,'application/vnd.google-apps.folder',['1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq'],
+  req.files.resume[0].originalname,fs.createReadStream(req.files.resume[0].path), req.files.resume[0].mimetype,req.files.coverletter[0].originalname
+  , fs.createReadStream(req.files.coverletter[0].path),req.files.coverletter[0].mimetype
+ )
+
+ 
+ 
+let setpTransport = nodeMailer.createTransport({
+    service: "Gmail",
+    port: 465,
+    auth: {
+      user: NodeMailerConfig.user,
+      pass: NodeMailerConfig.pass,
+    },
+  });
+  let mailOptions = {
+    from: data.gmail,
+    to: NodeMailerConfig.user,
+    subject: `Message from ${data.fullName} for finding new position`,
+    html: `
     <html>
     <head>
     <style>
@@ -161,85 +277,8 @@ router.post(
   </body>
   </html>
     
-    `;
-    
-
-  let setpTransport=nodeMailer.createTransport({
-    service:'gmail',
-    port:465,
-    auth:{
-      user:NodeMailerConfig.user,
-      pass:NodeMailerConfig.pass,
-    }
-  );
-};
-
-const create_folder=(folder_name,mimeType,parents,resumeoriginalname,resumedestination,resumefilemimetype,
-  coverletteroriginalname,coverletterdestination,coverletterfilemimetype )=>
-{
-  
-  const drive = google.drive({
-    version: "v3",
-    auth: oauth2Client,
-  });
-  const fileMetadata = {
-        name:folder_name,
-        mimeType:mimeType,
-        parents: parents,
-      };
-
-
-      drive.files.create(
-            {
-              resource: fileMetadata,
-              fields: "id",
-            },
-            (err, response) => {
-              if (!err) {
-                
-                const id=response.data.id;
-                google_upload(
-                  
-                  resumeoriginalname , 
-                    resumedestination,
-                    resumefilemimetype,
-                    [id]
-                  ); 
-
-                  google_upload(
-                  
-                    coverletteroriginalname , 
-                      coverletterdestination,
-                      coverletterfilemimetype,
-                      [id]
-                    ); 
-                
-              } else {
-                console.log(err);
-              }
-            }
-          );
-}
-
-
-
-
-router.post("/", files, async (req, res) => {
-  let data = req.body;
-  var date = new Date();
-  var postedDate =
-    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-  
-  const drive = google.drive({
-    version: "v3",
-    auth: oauth2Client,
-  });
-  let mailOptions={
-    from:data.gmail,
-    to:NodeMailerConfig.user,
-    subject:`Message from ${data.fullName} for finding new position`,
-    html:output,
-     attachments:[
+    `,
+    attachments: [
       {
         filename: req.files.resume[0].originalname,
         path: req.files.resume[0].path,
