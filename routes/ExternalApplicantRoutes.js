@@ -49,7 +49,7 @@ const files = upload.fields([
 
 //post externalApplicant
 
-const google_upload = (originalName, destination, mimeType, parents) => {
+const google_upload = (originalName, destination, mimeType,id) => {
   const drive = google.drive({
     version: "v3",
     auth: oauth2Client,
@@ -57,7 +57,7 @@ const google_upload = (originalName, destination, mimeType, parents) => {
   const fileMetadata = {
     name: originalName,
     mimetype: mimeType,
-    parents: parents,
+   parents:id
   };
   const media = {
     mimetype: mimeType,
@@ -71,24 +71,83 @@ const google_upload = (originalName, destination, mimeType, parents) => {
     },
     (err, response) => {
       if (!err) {
-        console.log(response);
+     //  console.log(response);
       } else {
         console.log(err);
       }
     }
   );
 };
+
+const create_folder=(folder_name,mimeType,parents,resumeoriginalname,resumedestination,resumefilemimetype,
+  coverletteroriginalname,coverletterdestination,coverletterfilemimetype )=>
+{
+  
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
+  });
+  const fileMetadata = {
+        name:folder_name,
+        mimeType:mimeType,
+        parents: parents,
+      };
+
+
+      drive.files.create(
+            {
+              resource: fileMetadata,
+              fields: "id",
+            },
+            (err, response) => {
+              if (!err) {
+                
+                const id=response.data.id;
+                google_upload(
+                  
+                  resumeoriginalname , 
+                    resumedestination,
+                    resumefilemimetype,
+                    [id]
+                  ); 
+
+                  google_upload(
+                  
+                    coverletteroriginalname , 
+                      coverletterdestination,
+                      coverletterfilemimetype,
+                      [id]
+                    ); 
+                
+              } else {
+                console.log(err);
+              }
+            }
+          );
+}
+
+
+
+
 router.post("/", files, async (req, res) => {
   let data = req.body;
   var date = new Date();
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-  // console.log(data)
-  // console.log(req.files)
-  // let postedDate = new Date();
-  // console.log(postedDate);
+  
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
+  });
+  
+  create_folder(`${data.fullName}`  ,'application/vnd.google-apps.folder',['1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq'],
+  req.files.resume[0].originalname,fs.createReadStream(req.files.resume[0].path), req.files.resume[0].mimetype,req.files.coverletter[0].originalname
+  , fs.createReadStream(req.files.coverletter[0].path),req.files.coverletter[0].mimetype
+ )
 
-  let setpTransport = nodeMailer.createTransport({
+ 
+ 
+let setpTransport = nodeMailer.createTransport({
     service: "Gmail",
     port: 465,
     auth: {
@@ -133,18 +192,18 @@ router.post("/", files, async (req, res) => {
     }
   });
 
-  google_upload(
-    req.files.resume[0].originalname + "  " + ` ${data.fullName} `,
-    fs.createReadStream(req.files.resume[0].path),
-    req.files.resume[0].mimetype,
-    ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
-  );
-  google_upload(
-    req.files.coverletter[0].originalname + "  " + ` ${data.fullName} `,
-    fs.createReadStream(req.files.coverletter[0].path),
-    req.files.coverletter[0].mimetype,
-    ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
-  );
+  // google_upload(
+  //   req.files.resume[0].originalname + "  " + ` ${data.fullName} `,
+  //   fs.createReadStream(req.files.resume[0].path),
+  //   req.files.resume[0].mimetype,
+  //   ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
+  // );
+  // google_upload(
+  //   req.files.coverletter[0].originalname,
+  //   fs.createReadStream(req.files.coverletter[0].path),
+  //   req.files.coverletter[0].mimetype,
+  //   ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
+  // );
   try {
     var sql =
       "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
