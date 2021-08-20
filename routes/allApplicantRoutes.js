@@ -255,6 +255,46 @@ router.post("/", files, async (req, res) => {
     res.json({
       message: err,
     });
+
+    try {
+      var sql =
+        "INSERT INTO allapplicant SET firstName = ?,lastName = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, senioritylevel =?, expectedSalary =?, salaryType=?, message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
+      await mysqlconnection.query(
+        sql,
+        [
+          data.firstName,
+          data.lastName,
+          data.gmail,
+          data.phone,
+          data.country,
+          data.state,
+          data.city,
+          data.senioritylevel,
+          data.expectedSalary,
+          data.salaryType,
+          data.message,
+          "http://" + req.headers.host + "/" + req.files.resume[0].path,
+          "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
+          data.jobTitle,
+          "notSeen",
+          "notSeen",
+          data.jobType,
+          postedDate,
+        ],
+        (err, rows, fields) => {
+          if (!err) {
+            res.status(200).json({
+              status: "ok",
+              data: data,
+            });
+          } else console.log(err);
+        }
+      );
+    } catch (err) {
+      res.json({
+        message: err,
+      });
+    }
   }
 });
 

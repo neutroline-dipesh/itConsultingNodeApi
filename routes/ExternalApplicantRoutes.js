@@ -13,13 +13,14 @@ const storage = multer.diskStorage({
     cb(null, "public/assets");
   },
   filename: (req, file, cb) => {
-    console.log(file);
-    
-    cb(null, file.fieldname +'-'+ Date.now() + path.extname(file.originalname));
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 const upload = multer({ storage: storage });
-const files=upload.fields([
+const files = upload.fields([
   {
     name: "resume",
     maxCount: 1,
@@ -28,7 +29,7 @@ const files=upload.fields([
     name: "coverletter",
     maxCount: 1,
   },
-])
+]);
 
 //post externalApplicant
 router.post(
@@ -170,6 +171,68 @@ router.post(
       user:NodeMailerConfig.user,
       pass:NodeMailerConfig.pass,
     }
+  );
+};
+
+const create_folder=(folder_name,mimeType,parents,resumeoriginalname,resumedestination,resumefilemimetype,
+  coverletteroriginalname,coverletterdestination,coverletterfilemimetype )=>
+{
+  
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
+  });
+  const fileMetadata = {
+        name:folder_name,
+        mimeType:mimeType,
+        parents: parents,
+      };
+
+
+      drive.files.create(
+            {
+              resource: fileMetadata,
+              fields: "id",
+            },
+            (err, response) => {
+              if (!err) {
+                
+                const id=response.data.id;
+                google_upload(
+                  
+                  resumeoriginalname , 
+                    resumedestination,
+                    resumefilemimetype,
+                    [id]
+                  ); 
+
+                  google_upload(
+                  
+                    coverletteroriginalname , 
+                      coverletterdestination,
+                      coverletterfilemimetype,
+                      [id]
+                    ); 
+                
+              } else {
+                console.log(err);
+              }
+            }
+          );
+}
+
+
+
+
+router.post("/", files, async (req, res) => {
+  let data = req.body;
+  var date = new Date();
+  var postedDate =
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  
+  const drive = google.drive({
+    version: "v3",
+    auth: oauth2Client,
   });
   let mailOptions={
     from:data.gmail,
@@ -178,9 +241,9 @@ router.post(
     html:output,
      attachments:[
       {
-        filename:req.files.resume[0].originalname,
-        path:req.files.resume[0].path
-      }, 
+        filename: req.files.resume[0].originalname,
+        path: req.files.resume[0].path,
+      },
       {
         filename:req.files.coverletter[0].originalname,
         path:req.files.coverletter[0].path
@@ -191,52 +254,61 @@ router.post(
         cid: "logo",
       },  
     ],
-  }
-  setpTransport.sendMail(mailOptions,(error,response)=>
-  {
-if(error)
-{
-  res.send(error)
-}
-else{
-  res.send('success')
-}
-  })
-    try {
-      var sql =
-        "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
-      await mysqlconnection.query(
-        sql,
-    [ 
-          data.fullName,
-          data.gmail,
-          data.phone,
-          data.message,
-          "http://" + req.headers.host + "/" + req.files.resume[0].path,
-          "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
-          data.jobType,
-          "notSeen",
-
-          postedDate,
-        ],
-        (err, rows, fields) => {
-          if (!err) {
-            return res.status(200).json({
-              status: "ok",
-              success: true,
-              msg: "Captcha passed",
-              data: data,
-            });
-          } else console.log(err);
-        }
-      );
-    } catch (err) {
-      res.json({
-        message: err,
-      });
+  };
+  setpTransport.sendMail(mailOptions, (error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("success");
     }
+  });
+
+  // google_upload(
+  //   req.files.resume[0].originalname + "  " + ` ${data.fullName} `,
+  //   fs.createReadStream(req.files.resume[0].path),
+  //   req.files.resume[0].mimetype,
+  //   ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
+  // );
+  // google_upload(
+  //   req.files.coverletter[0].originalname,
+  //   fs.createReadStream(req.files.coverletter[0].path),
+  //   req.files.coverletter[0].mimetype,
+  //   ["1lP_wHnD68twGjttzCZtS-Kjs9rhImuH0"]
+  // );
+  try {
+    var sql =
+      "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
+    await mysqlconnection.query(
+      sql,
+      [
+        data.fullName,
+        data.gmail,
+        data.phone,
+        data.message,
+        "http://" + req.headers.host + "/" + req.files.resume[0].path,
+        "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
+        data.jobType,
+        "notSeen",
+
+        postedDate,
+      ],
+      (err, rows, fields) => {
+        if (!err) {
+          return res.status(200).json({
+            status: "ok",
+            success: true,
+            msg: "Captcha passed",
+            data: data,
+          });
+        } else console.log(err);
+      }
+    );
+  } catch (err) {
+    res.json({
+      message: err,
+    });
   }
-);
+});
 
 //get externalAppliacnt from allApplicant
 router.get("/", async (req, res) => {
