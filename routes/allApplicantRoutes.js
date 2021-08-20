@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
-const files=upload.fields([
+const files = upload.fields([
   {
     name: "resume",
     maxCount: 1,
@@ -25,34 +25,31 @@ const files=upload.fields([
     name: "coverletter",
     maxCount: 1,
   },
-])
+]);
 
 //post internalJobs
-router.post(
-  "/",
-  files,
-   async (req, res) => {
-    let data = req.body;
-    console.log(data);
-    var date = new Date();
-    var postedDate =
-      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    // let postedDate = new Date();
-    // console.log(postedDate);
+router.post("/", files, async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  var date = new Date();
+  var postedDate =
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  // let postedDate = new Date();
+  // console.log(postedDate);
 
-    let setpTransport = nodeMailer.createTransport({
-      service: "gmail",
-      port: 465,
-      auth: {
-        user: "yamuna.neutroline@gmail.com",
-        pass: "Working@Neutroline123",
-      },
-    });
-    let mailOptions = {
-      from: data.email,
-      to: "yamuna.neutroline@gmail.com",
-      subject: `Job Application from ${data.firstName} ${data.lastName}`,
-      html: `
+  let setpTransport = nodeMailer.createTransport({
+    service: "gmail",
+    port: 465,
+    auth: {
+      user: "yamuna.neutroline@gmail.com",
+      pass: "Working@Neutroline123",
+    },
+  });
+  let mailOptions = {
+    from: data.email,
+    to: "yamuna.neutroline@gmail.com",
+    subject: `Job Application from ${data.firstName} ${data.lastName}`,
+    html: `
       <h1>Information</h1>
       <ul>
       <li> Name: ${data.firstName} ${data.lastName}</li>
@@ -73,69 +70,68 @@ router.post(
       <p>${data.message}</p>
       
       `,
-      attachments: [
-        {
-          filename: req.files.resume[0].originalname,
-          path: req.files.resume[0].path,
-        },
-        {
-          filename: req.files.coverletter[0].originalname,
-          path: req.files.coverletter[0].path,
-        },
-      ],
-    };
-    setpTransport.sendMail(mailOptions, (error, response) => {
-      if (error) {
-        res.send(error);
-      } else {
-        res.send("success");
-      }
-    });
-
-    try {
-      var sql =
-        "INSERT INTO allapplicant SET firstName = ?,lastName = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, senioritylevel =?, expectedSalary =?, salaryType=?, message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
-      await mysqlconnection.query(
-        sql,
-        [
-          data.firstName,
-
-          data.lastName,
-
-          data.gmail,
-          data.phone,
-          data.country,
-          data.state,
-          data.city,
-
-          data.senioritylevel,
-          data.expectedSalary,
-          data.salaryType,
-          data.message,
-          "http://" + req.headers.host + "/" + req.files.resume[0].path,
-          "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
-          data.jobTitle,
-          "notSeen",
-          "notSeen",
-          data.jobType,
-          postedDate,
-        ],
-        (err, rows, fields) => {
-          if (!err) {
-            res.status(200).json({
-              status: "ok",
-              data: data,
-            });
-          } else console.log(err);
-        }
-      );
-    } catch (err) {
-      res.json({
-        message: err,
-      });
+    attachments: [
+      {
+        filename: req.files.resume[0].originalname,
+        path: req.files.resume[0].path,
+      },
+      {
+        filename: req.files.coverletter[0].originalname,
+        path: req.files.coverletter[0].path,
+      },
+    ],
+  };
+  setpTransport.sendMail(mailOptions, (error, response) => {
+    if (error) {
+      res.send(error);
+    } else {
+      res.send("success");
     }
+  });
+
+  try {
+    var sql =
+      "INSERT INTO allapplicant SET firstName = ?,lastName = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, senioritylevel =?, expectedSalary =?, salaryType=?, message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
+    await mysqlconnection.query(
+      sql,
+      [
+        data.firstName,
+
+        data.lastName,
+
+        data.gmail,
+        data.phone,
+        data.country,
+        data.state,
+        data.city,
+
+        data.senioritylevel,
+        data.expectedSalary,
+        data.salaryType,
+        data.message,
+        "http://" + req.headers.host + "/" + req.files.resume[0].path,
+        "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
+        data.jobTitle,
+        "notSeen",
+        "notSeen",
+        data.jobType,
+        postedDate,
+      ],
+      (err, rows, fields) => {
+        if (!err) {
+          res.status(200).json({
+            status: "ok",
+            data: data,
+          });
+        } else console.log(err);
+      }
+    );
+  } catch (err) {
+    res.json({
+      message: err,
+    });
   }
-);
+});
 
 //get allApplicant from allApplicant
 router.get("/", async (req, res) => {
@@ -221,7 +217,7 @@ router.get("/:id", async (req, res) => {
 
 //update approvelStatus from allApplicant
 router.patch("/approvelStatus/:id", auth, async (req, res) => {
-  // console.log(req.params.id);
+  console.log(req.body);
 
   let data = req.body;
 

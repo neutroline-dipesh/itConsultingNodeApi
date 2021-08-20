@@ -205,15 +205,15 @@ router.get("/contract/totalJobs", async (req, res) => {
 
 //update allqueries
 router.patch("/:id", auth, async (req, res) => {
-  console.log(req.params.id);
+  console.log(req.body);
 
   let data = req.body;
-  console.log(data);
+  console.log(req.body);
   var date = new Date();
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
-  console.log(postedDate);
+  // console.log(postedDate);
   try {
     var sql =
       "UPDATE alljobs SET jobId = ?,jobTitle = ?, jobSubtitle = ?, department = ?, jobType = ?, country = ?, state=?, city = ?, description = ?, publishBy = ?, visibility = ?, postedDate = ? WHERE id = ?";
