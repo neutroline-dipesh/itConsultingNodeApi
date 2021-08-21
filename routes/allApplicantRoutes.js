@@ -96,15 +96,12 @@ router.post("/", files, async (req, res) => {
       sql,
       [
         data.firstName,
-
         data.lastName,
-
         data.gmail,
         data.phone,
         data.country,
         data.state,
         data.city,
-
         data.senioritylevel,
         data.expectedSalary,
         data.salaryType,
