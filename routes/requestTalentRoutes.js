@@ -7,9 +7,10 @@ const auth = require("../middlewares/checkAuth");
 const fetch = require("node-fetch");
 const { stringify } = require("querystring");
 const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
+
 const fs = require("fs");
 const googlefile_upload = require("./credentials");
+const NodeMailerConfig = require("../config/nodemailer.config");
 
 //for file upload
 const storage = multer.diskStorage({
@@ -46,16 +47,65 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   <html>
   <head>
   <style>
-table {
+  .bodyContainer{
+  width: 80%;
+  height: auto;
+  background-color:#f1f1f1;
+  padding: 2rem;
+  
+}
+.innerBox{
   font-family: arial, sans-serif;
   font-size: 16px;
+  width: 36rem;
+  position:relative;
+  margin-left:5%;
+  background-color:white;
+  height: auto;
+  padding:2rem;
+}
+
+.topBox{
+  height: auto;
+  width: 40rem;
+  background-color:#8ea9db;
+  padding-top:1rem;
+  padding-bottom:0.5rem;
+  position:relative;
+  margin-left:5%;
+}
+
+p{
+  color: #fff;
+  text-align:center;
+  font-weight: 700;
+}
+img{
+  height: auto;
+  width: 200px;
+  margin-left:32%;
+
+}
+
+.footerText{
+  color: #3e7aba;
+  text-align:center;
+  margin-top:5px;
+}
+li{
+  list-style-type: none;
+  line-height: 2em;
+  font-size:14px;
+}
+table {
+  font-family: arial, sans-serif;
+  font-size: 14px;
   width: 80%;
   position:relative;
   margin-left:10%;
 }
 
 td {
-  border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
 }
@@ -63,72 +113,61 @@ td {
 tr{
   background-color: #dddddd;
 }
-h1{
-  color: #3e7aba;
-  text-align:center;
-}
-img{
-  height: auto;
-  width: 200px;
-  margin-left:35%;
 
-}
-.bodyContainer{
-  width: 80%;
-  height: auto;
-  background-color:#f1f1f1;
-  padding: 2rem;
-  
-}
-.footerText{
-  color: #3e7aba;
-  text-align:center;
-}
 </style>
   </head>
   <body>
   <div class ="bodyContainer">
- 
-  <h1> You have a new Employee request!!</h1>
   
+  <div class="topBox">
+  <img src="cid:logo" alt="logo"/>
+  <p> Employee request</p>
+  </div>
+  <div class="innerBox">
+ 
+  
+  <h3>Hi,<br>
+
+  ${data.firstName} has submitted a job application on ${data.jobTitle}.</h3>
   <table class = "table">
   <tbody>
-    <tr>
-      <td>Name: </td>
-      <td>${data.firstName} ${data.lastName}</td>
-    </tr>
-    <tr>
-      <td>Email: </td>
-      <td>${data.email}</td>
-    </tr>
-    <tr>
-      <td>Phone: </td>
-      <td>${data.phone}</td>
-    </tr>
-    <tr>
-      <td>Country: </td>
-      <td>${data.country}</td>
-    </tr>
-    <tr>
-      <td>City: </td>
-      <td>${data.city}</td>
-    </tr>
-    <tr>
-      <td>Company Name: </td>
-      <td>${data.companyName}</td>
-    </tr>
-    <tr>
-      <td>Job Title: </td>
-      <td>${data.jobTitle}</td>
-    </tr>
-    <tr>
-      <td>Message: </td>
-      <td>${data.message}</td>
-    </tr>
-  </tbody>
+  <tr>
+    <td>Name: </td>
+    <td>${data.firstName} ${data.lastName}</td>
+  </tr>
+  <tr>
+    <td>Email: </td>
+    <td>${data.email}</td>
+  </tr>
+  <tr>
+    <td>Phone: </td>
+    <td>${data.phone}</td>
+  </tr>
+  <tr>
+    <td>Country: </td>
+    <td>${data.country}</td>
+  </tr>
+  <tr>
+    <td>City: </td>
+    <td>${data.city}</td>
+  </tr>
+  <tr>
+    <td>Company Name: </td>
+    <td>${data.companyName}</td>
+  </tr>
+  <tr>
+    <td>Job Title: </td>
+    <td>${data.jobTitle}</td>
+  </tr>
+  <tr>
+    <td>Message: </td>
+    <td>${data.message}</td>
+  </tr>
+</tbody>
 </table>
-<div class="footerText">©Neutrosys Pvt Ltd.</div>
+
 </div>
+<div class="footerText">©Neutrosys Pvt Ltd.</div>
 </body>
 </html>
   `;
@@ -137,14 +176,14 @@ img{
     service: "Gmail",
     port: 465,
     auth: {
-      user: "pramila.neutroline@gmail.com",
-      pass: "Neutroline1pk",
+      user: NodeMailerConfig.user,
+      pass: NodeMailerConfig.pass,
     },
   });
 
   let mailOptions = {
     from: data.email,
-    to: "pramila.neutroline@gmail.com",
+    to: NodeMailerConfig.user,
     subject: `Employee Request from ${data.firstName} ${data.lastName}`,
     html: output,
     attachments: [
