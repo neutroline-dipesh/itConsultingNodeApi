@@ -7,6 +7,9 @@ const auth = require("../middlewares/checkAuth");
 const fetch = require("node-fetch");
 const { stringify } = require("querystring");
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+const fs = require("fs");
+const googlefile_upload = require("./credentials");
 
 //for file upload
 const storage = multer.diskStorage({
@@ -28,9 +31,18 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
+
+  googlefile_upload.create_folder(
+    `${data.firstName} ${data.lastName}`,
+    "application/vnd.google-apps.folder",
+    ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+    req.file.name,
+    fs.createReadStream(req.file.path),
+    req.file.mimetype
+  );
+
   console.log(data);
-  const output = `
- 
+  const output = ` 
   <html>
   <head>
   <style>
@@ -76,7 +88,7 @@ img{
   </head>
   <body>
   <div class ="bodyContainer">
-  <img src="cid:logo" alt="logo"/>
+ 
   <h1> You have a new Employee request!!</h1>
   
   <table class = "table">
@@ -125,25 +137,20 @@ img{
     service: "Gmail",
     port: 465,
     auth: {
-      user: "yamuna.neutroline@gmail.com",
-      pass: "Neutroline@Neutroline123",
+      user: "pramila.neutroline@gmail.com",
+      pass: "Neutroline1pk",
     },
   });
 
   let mailOptions = {
     from: data.email,
-    to: "yamuna.neutroline@gmail.com",
+    to: "pramila.neutroline@gmail.com",
     subject: `Employee Request from ${data.firstName} ${data.lastName}`,
     html: output,
     attachments: [
       {
         filename: req.file.name,
         path: req.file.path,
-      },
-      {
-        filename: "logo.jpg",
-        path: `${__dirname}/../public/assets/logo.png`,
-        cid: "logo",
       },
     ],
   };

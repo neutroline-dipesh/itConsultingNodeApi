@@ -5,7 +5,8 @@ const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const nodeMailer = require("nodemailer");
-
+// const fs = require("fs");
+// const googlefile_upload = require("./credentials");
 //for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -39,6 +40,19 @@ router.post(
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     // let postedDate = new Date();
     // console.log(postedDate);
+
+    // googlefile_upload.multiplecreate_folder(
+    //   `${data.firstName} ${data.lastName}`,
+    //   "application/vnd.google-apps.folder",
+    //   ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+    //   req.files.resume[0].originalname,
+    //   fs.createReadStream(req.files.resume[0].path),
+    //   req.files.resume[0].mimetype,
+    //   req.files.coverletter[0].originalname,
+    //   fs.createReadStream(req.files.coverletter[0].path),
+    //   req.files.coverletter[0].mimetype
+    // );
+
 
     let setpTransport = nodeMailer.createTransport({
       service: "gmail",
