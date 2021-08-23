@@ -5,6 +5,7 @@ const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const nodeMailer = require("nodemailer");
+const NodeMailerConfig = require("../config/nodemailer.config");
 
 //for file upload
 const storage = multer.diskStorage({
@@ -36,11 +37,157 @@ router.post("/", files, async (req, res) => {
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
   // console.log(postedDate);
+<<<<<<< HEAD
+=======
+
+  const output = `
+ 
+    <html>
+    <head>
+    <style>
+    .bodyContainer{
+    width: 80%;
+    height: auto;
+    background-color:#f1f1f1;
+    padding: 2rem;
+    
+  }
+  .innerBox{
+    font-family: arial, sans-serif;
+    font-size: 16px;
+    width: 36rem;
+    position:relative;
+    margin-left:5%;
+    background-color:white;
+    height: auto;
+    padding:2rem;
+  }
+  
+  .topBox{
+    height: auto;
+    width: 40rem;
+    background-color:#8ea9db;
+    padding-top:1rem;
+    padding-bottom:0.5rem;
+    position:relative;
+    margin-left:5%;
+  }
+  
+  p{
+    color: #fff;
+    text-align:center;
+    font-weight: 700;
+  }
+  img{
+    height: auto;
+    width: 200px;
+    margin-left:32%;
+  
+  }
+  
+  .footerText{
+    color: #3e7aba;
+    text-align:center;
+    margin-top:5px;
+  }
+  li{
+    list-style-type: none;
+    line-height: 2em;
+    font-size:14px;
+  }
+  table {
+    font-family: arial, sans-serif;
+    font-size: 14px;
+    width: 80%;
+    position:relative;
+    margin-left:10%;
+  }
+  
+  td {
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr{
+    background-color: #dddddd;
+  }
+  
+  </style>
+    </head>
+    <body>
+    <div class ="bodyContainer">
+    
+    <div class="topBox">
+    <img src="cid:logo" alt="logo"/>
+    <p> Job Application</p>
+    </div>
+    <div class="innerBox">
+   
+    
+    <h3>Hi,<br>
+  
+    ${data.firstName} has submitted a job application on ${data.jobTitle}.</h3>
+    <table class = "table">
+    <tbody>
+      <tr>
+        <td><b>Name: </b></td>
+        <td>${data.firstName} ${data.lastName}</td>
+      </tr>
+      <tr>
+        <td><b>Email:</b> </td>
+        <td>${data.gmail}</td>
+      </tr>
+      <tr>
+        <td><b>Phone:</b> </td>
+        <td>${data.phone}</td>
+      </tr>
+      <tr>
+        <td><b>Country: </b></td>
+        <td>${data.country}</td>
+      </tr>
+      <tr>
+      <td><b>State:</b> </td>
+      <td>${data.state}</td>
+    </tr>
+      <tr>
+        <td><b>City:</b> </td>
+        <td>${data.city}</td>
+      </tr>
+      <tr>
+        <td><b>Seniority Level:</b> </td>
+        <td>${data.senioritylevel}</td>
+      </tr>
+      <tr>
+      <td><b>Expected Salary:</b> </td>
+      <td>${data.expectedSalary}</td>
+    </tr>
+      <tr>
+        <td><b>Message: </b></td>
+        <td>${data.message}</td>
+      </tr>
+      <tr>
+        <td><b>Job Title: </b></td>
+        <td>${data.jobTitle}</td>
+      </tr>
+      <tr>
+        <td><b>Job Title: </b></td>
+        <td>${data.jobType}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  </div>
+  <div class="footerText">©Neutrosys Pvt Ltd.</div>
+  </body>
+  </html>
+    `;
+>>>>>>> 764c18d5f6d080f551ce3efc86a877f34e934929
 
   let setpTransport = nodeMailer.createTransport({
     service: "gmail",
     port: 465,
     auth: {
+<<<<<<< HEAD
       user: "yamuna.neutroline@gmail.com",
       pass: "Working@Neutroline123",
     },
@@ -70,6 +217,17 @@ router.post("/", files, async (req, res) => {
       <p>${data.message}</p>
       
       `,
+=======
+      user: NodeMailerConfig.user,
+      pass: NodeMailerConfig.pass,
+    },
+  });
+  let mailOptions = {
+    from: data.gmail,
+    to: NodeMailerConfig.user,
+    subject: `Job Application from ${data.firstName} ${data.lastName}`,
+    html: output,
+>>>>>>> 764c18d5f6d080f551ce3efc86a877f34e934929
     attachments: [
       {
         filename: req.files.resume[0].originalname,
@@ -79,6 +237,14 @@ router.post("/", files, async (req, res) => {
         filename: req.files.coverletter[0].originalname,
         path: req.files.coverletter[0].path,
       },
+<<<<<<< HEAD
+=======
+      {
+        filename: "logo.jpg",
+        path: `${__dirname}/../public/assets/logo.png`,
+        cid: "logo",
+      },
+>>>>>>> 764c18d5f6d080f551ce3efc86a877f34e934929
     ],
   };
   setpTransport.sendMail(mailOptions, (error, response) => {
