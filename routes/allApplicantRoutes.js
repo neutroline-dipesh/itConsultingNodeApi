@@ -39,8 +39,6 @@ router.post("/", files, async (req, res) => {
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
   // console.log(postedDate);
-<<<<<<< HEAD
-=======
 
   const output = `
  
@@ -183,57 +181,23 @@ router.post("/", files, async (req, res) => {
   </body>
   </html>
     `;
->>>>>>> 764c18d5f6d080f551ce3efc86a877f34e934929
 
-    // googlefile_upload.multiplecreate_folder(
-    //   `${data.firstName} ${data.lastName}`,
-    //   "application/vnd.google-apps.folder",
-    //   ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
-    //   req.files.resume[0].originalname,
-    //   fs.createReadStream(req.files.resume[0].path),
-    //   req.files.resume[0].mimetype,
-    //   req.files.coverletter[0].originalname,
-    //   fs.createReadStream(req.files.coverletter[0].path),
-    //   req.files.coverletter[0].mimetype
-    // );
+  // googlefile_upload.multiplecreate_folder(
+  //   `${data.firstName} ${data.lastName}`,
+  //   "application/vnd.google-apps.folder",
+  //   ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+  //   req.files.resume[0].originalname,
+  //   fs.createReadStream(req.files.resume[0].path),
+  //   req.files.resume[0].mimetype,
+  //   req.files.coverletter[0].originalname,
+  //   fs.createReadStream(req.files.coverletter[0].path),
+  //   req.files.coverletter[0].mimetype
+  // );
 
-
-  
   let setpTransport = nodeMailer.createTransport({
     service: "gmail",
     port: 465,
     auth: {
-<<<<<<< HEAD
-      user: "yamuna.neutroline@gmail.com",
-      pass: "Working@Neutroline123",
-    },
-  });
-  let mailOptions = {
-    from: data.email,
-    to: "yamuna.neutroline@gmail.com",
-    subject: `Job Application from ${data.firstName} ${data.lastName}`,
-    html: `
-      <h1>Information</h1>
-      <ul>
-      <li> Name: ${data.firstName} ${data.lastName}</li>
-      <li> Email: ${data.gmail}</li>
-      <li> Phone: ${data.phone}</li>
-      <li> Country: ${data.country}</li>
-      <li> State: ${data.state}</li>
-      <li> City: ${data.city}</li>
-      <li> Seniority Level: ${data.senioritylevel}</li>
-      <li> Salary: ${data.expectedSalary}</li>
-      <li> Salary Type: ${data.salaryType}</li>
-      <li> Message: ${data.message}</li>
-      <li> JobTitle: ${data.jobTitle}</li>
-      <li> JobType: ${data.jobType}</li>
-      
-      </ul>
-      <h3>Message</h3>
-      <p>${data.message}</p>
-      
-      `,
-=======
       user: NodeMailerConfig.user,
       pass: NodeMailerConfig.pass,
     },
@@ -243,7 +207,6 @@ router.post("/", files, async (req, res) => {
     to: NodeMailerConfig.user,
     subject: `Job Application from ${data.firstName} ${data.lastName}`,
     html: output,
->>>>>>> 764c18d5f6d080f551ce3efc86a877f34e934929
     attachments: [
       {
         filename: req.files.resume[0].originalname,
@@ -253,14 +216,11 @@ router.post("/", files, async (req, res) => {
         filename: req.files.coverletter[0].originalname,
         path: req.files.coverletter[0].path,
       },
-<<<<<<< HEAD
-=======
       {
         filename: "logo.jpg",
         path: `${__dirname}/../public/assets/logo.png`,
         cid: "logo",
       },
->>>>>>> 764c18d5f6d080f551ce3efc86a877f34e934929
     ],
   };
   setpTransport.sendMail(mailOptions, (error, response) => {
