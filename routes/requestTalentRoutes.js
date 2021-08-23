@@ -7,6 +7,9 @@ const auth = require("../middlewares/checkAuth");
 const fetch = require("node-fetch");
 const { stringify } = require("querystring");
 const nodemailer = require("nodemailer");
+
+const fs = require("fs");
+const googlefile_upload = require("./credentials");
 const NodeMailerConfig = require("../config/nodemailer.config");
 
 //for file upload
@@ -29,9 +32,18 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
+
+  googlefile_upload.create_folder(
+    `${data.firstName} ${data.lastName}`,
+    "application/vnd.google-apps.folder",
+    ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+    req.file.name,
+    fs.createReadStream(req.file.path),
+    req.file.mimetype
+  );
+
   console.log(data);
-  const output = `
- 
+  const output = ` 
   <html>
   <head>
   <style>
@@ -178,11 +190,6 @@ tr{
       {
         filename: req.file.name,
         path: req.file.path,
-      },
-      {
-        filename: "logo.jpg",
-        path: `${__dirname}/../public/assets/logo.png`,
-        cid: "logo",
       },
     ],
   };

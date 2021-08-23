@@ -5,9 +5,8 @@ const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const nodeMailer = require("nodemailer");
-const NodeMailerConfig = require("../config/nodemailer.config");
-const { google } = require("googleapis");
 const fs = require("fs");
+<<<<<<< HEAD
 const nodemailerConfig = require("../config/nodemailer.config");
 
 // //Add Credentials for google api
@@ -24,8 +23,11 @@ const oauth2Client = new google.auth.OAuth2(
   Redirect_uri[0]
 );
 oauth2Client.setCredentials({ refresh_token: Refresh_token });
+=======
+const googlefile_upload = require("./credentials");
+const NodeMailerConfig = require("../config/nodemailer.config");
+>>>>>>> bb2b188abad4070ddc1cea7cb629ed61faf04c8d
 
-//for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/assets");
@@ -51,6 +53,7 @@ const files = upload.fields([
 
 //post externalApplicant
 
+<<<<<<< HEAD
 const google_upload = (originalName, destination, mimeType, id) => {
   const drive = google.drive({
     version: "v3",
@@ -130,12 +133,15 @@ const create_folder = (
   );
 };
 
+=======
+>>>>>>> bb2b188abad4070ddc1cea7cb629ed61faf04c8d
 router.post("/", files, async (req, res) => {
   let data = req.body;
 
   var date = new Date();
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+<<<<<<< HEAD
   var resume = "";
   var coverletter = "";
   var resumeOriginalName = "";
@@ -154,6 +160,10 @@ router.post("/", files, async (req, res) => {
 
 <<<<<<< HEAD
   create_folder(
+=======
+
+  googlefile_upload.multiplecreate_folder(
+>>>>>>> bb2b188abad4070ddc1cea7cb629ed61faf04c8d
     `${data.fullName}`,
     "application/vnd.google-apps.folder",
     ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
@@ -165,6 +175,7 @@ router.post("/", files, async (req, res) => {
     req.files.coverletter[0].mimetype
   );
 
+<<<<<<< HEAD
   // let setpTransport = nodeMailer.createTransport({
   //   service: "Gmail",
   //   port: 465,
@@ -213,6 +224,9 @@ router.post("/", files, async (req, res) => {
  
  
 let setpTransport = nodeMailer.createTransport({
+=======
+  let setpTransport = nodeMailer.createTransport({
+>>>>>>> bb2b188abad4070ddc1cea7cb629ed61faf04c8d
     service: "Gmail",
     port: 465,
     auth: {
@@ -366,6 +380,10 @@ let setpTransport = nodeMailer.createTransport({
   });
 >>>>>>> 764c18d5f6d080f551ce3efc86a877f34e934929
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> bb2b188abad4070ddc1cea7cb629ed61faf04c8d
   try {
     var sql =
       "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";

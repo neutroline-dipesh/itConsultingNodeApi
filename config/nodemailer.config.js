@@ -1,5 +1,5 @@
 module.exports = {
-  user: "yamuna.neutroline@gmail.com",
-  pass: "Neutroline@Neutroline123",
+  user: "pramila.neutroline@gmail.com",
+  pass: "Neutroline1pk",
   };
   
