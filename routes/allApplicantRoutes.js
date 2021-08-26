@@ -5,8 +5,8 @@ const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const nodeMailer = require("nodemailer");
-// const fs = require("fs");
-// const googlefile_upload = require("./credentials");
+const fs = require("fs");
+const googlefile_upload = require("./credentials");
 const NodeMailerConfig = require("../config/nodemailer.config");
 
 //for file upload
@@ -39,6 +39,41 @@ router.post("/", files, async (req, res) => {
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   // let postedDate = new Date();
   // console.log(postedDate);
+  var coverletter = "";
+  var coverOriginalName="";
+  var coverletterdestination="";
+  var coverlettermimeType="";
+  var coverPath="";
+
+    resume = "http://" + req.headers.host + "/" + req.files.resume[0].path;
+   resumeOriginalName = req.files.resume[0].originalname;
+    resumedestination=fs.createReadStream(req.files.resume[0].path);
+    resumemimeType=req.files.resume[0].mimetype;
+    resumePath=req.files.resume[0].path;
+  
+  if (req.files.coverletter) {
+    coverletter =
+      "http://" + req.headers.host + "/" + req.files.coverletter[0].path;
+      coverOriginalName=req.files.coverletter[0].originalname;
+      coverletterdestination=fs.createReadStream(req.files.coverletter[0].path);
+      coverlettermimeType= req.files.coverletter[0].mimetype;
+      coverPath=req.files.coverletter[0].path;
+  }
+  
+
+
+  googlefile_upload.multiplecreate_folder(
+    `${data.fullName}`,
+    "application/vnd.google-apps.folder",
+    ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+    resumeOriginalName,
+    resumedestination,
+    resumemimeType ,
+    coverOriginalName,
+    coverletterdestination,
+    coverlettermimeType
+  );
+
 
   const output = `
  
@@ -182,17 +217,7 @@ router.post("/", files, async (req, res) => {
   </html>
     `;
 
-  // googlefile_upload.multiplecreate_folder(
-  //   `${data.firstName} ${data.lastName}`,
-  //   "application/vnd.google-apps.folder",
-  //   ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
-  //   req.files.resume[0].originalname,
-  //   fs.createReadStream(req.files.resume[0].path),
-  //   req.files.resume[0].mimetype,
-  //   req.files.coverletter[0].originalname,
-  //   fs.createReadStream(req.files.coverletter[0].path),
-  //   req.files.coverletter[0].mimetype
-  // );
+    
 
   let setpTransport = nodeMailer.createTransport({
     service: "gmail",
@@ -209,12 +234,12 @@ router.post("/", files, async (req, res) => {
     html: output,
     attachments: [
       {
-        filename: req.files.resume[0].originalname,
-        path: req.files.resume[0].path,
+        filename: resumeOriginalName,
+        path: resumePath,
       },
       {
-        filename: req.files.coverletter[0].originalname,
-        path: req.files.coverletter[0].path,
+        filename: coverOriginalName,
+        path: coverPath,
       },
       {
         filename: "logo.jpg",
@@ -231,6 +256,9 @@ router.post("/", files, async (req, res) => {
     }
   });
 
+
+
+  
   try {
     var sql =
       "INSERT INTO allapplicant SET firstName = ?,lastName = ?, gmail = ?, phone = ?, country = ?, state = ?,city = ?, senioritylevel =?, expectedSalary =?, salaryType=?, message = ?, resume = ? , coverletter = ?, jobTitle = ?, status = ?,approvelStatus = ?,jobType=?, postedDate = ?";
@@ -248,8 +276,8 @@ router.post("/", files, async (req, res) => {
         data.expectedSalary,
         data.salaryType,
         data.message,
-        "http://" + req.headers.host + "/" + req.files.resume[0].path,
-        "http://" + req.headers.host + "/" + req.files.coverletter[0].path,
+      resume,
+       coverletter,
         data.jobTitle,
         "notSeen",
         "notSeen",
