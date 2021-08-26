@@ -4,7 +4,6 @@ const mysqlconnection = require("../model/db");
 const auth = require("../middlewares/checkAuth");
 
 //post allqueries
-
 router.post("/", auth, async (req, res) => {
   var id = "";
   var date = new Date();
