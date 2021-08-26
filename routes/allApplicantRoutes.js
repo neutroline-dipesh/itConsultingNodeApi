@@ -219,8 +219,6 @@ router.post("/", files, async (req, res) => {
 
     
 
-
-  
   let setpTransport = nodeMailer.createTransport({
     service: "gmail",
     port: 465,

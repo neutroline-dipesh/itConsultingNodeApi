@@ -26,7 +26,7 @@ const google_upload = (originalName, destination, mimeType,id) => {
   const fileMetadata = {
     name: originalName,
     mimetype: mimeType,
-   parents:id
+    parents: id,
   };
   const media = {
     mimetype: mimeType,
@@ -52,9 +52,14 @@ const google_upload = (originalName, destination, mimeType,id) => {
   );
 };
 
-const create_folder=(folder_name,mimeType,parents,originalname,destination,filemimetype )=>
-{
-  
+const create_folder = (
+  folder_name,
+  mimeType,
+  parents,
+  originalname,
+  destination,
+  filemimetype
+) => {
   const fileMetadata = {
         name:folder_name,
         mimeType:mimeType,
@@ -88,14 +93,19 @@ const create_folder=(folder_name,mimeType,parents,originalname,destination,filem
 }
 
 
-const multiplecreate_folder=(folder_name,mimeType,parents,resumeoriginalname,resumedestination,resumefilemimetype,
-  coverletteroriginalname,coverletterdestination,coverletterfilemimetype )=>
-{
+
+const multiplecreate_folder = (
+  folder_name,
+  mimeType,
+  parents,
+  resumeoriginalname,
+  resumedestination,
+  resumefilemimetype,
+  coverletteroriginalname,
+  coverletterdestination,
+  coverletterfilemimetype
+) => {
   
-  const drive = google.drive({
-    version: "v3",
-    auth: oauth2Client,
-  });
   const fileMetadata = {
         name:folder_name,
         mimeType:mimeType,
@@ -146,10 +156,7 @@ async function generatePublicUrl(id) {
           type: 'anyone',
          
           },
-      });
-
-     
-      
+      });      
       //obtain the webview and webcontent links
       const result = await drive.files.get({
           fileId: id,
@@ -165,6 +172,7 @@ async function generatePublicUrl(id) {
 }
 
 
+  
 
 module.exports={
   create_folder,multiplecreate_folder

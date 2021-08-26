@@ -36,7 +36,6 @@ const files = upload.fields([
 
 router.post("/", files, async (req, res) => {
   let data = req.body;
-
   var date = new Date();
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -223,7 +222,7 @@ router.post("/", files, async (req, res) => {
         filename: "logo.jpg",
         path: `${__dirname}/../public/assets/logo.png`,
         cid: "logo",
-      },  
+      },
     ],
   };
   setpTransport.sendMail(mailOptions, (error) => {
@@ -234,37 +233,37 @@ router.post("/", files, async (req, res) => {
     }
   });
 
-  // try {
-  //   var sql =
-  //     "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
-  //   await mysqlconnection.query(
-  //     sql,
-  //     [
-  //       data.fullName,
-  //       data.gmail,
-  //       data.phone,
-  //       data.message,
-  //       resume,
-  //       coverletter,
-  //       data.jobType,
-  //       "notSeen",
+  try {
+    var sql =
+      "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
+    await mysqlconnection.query(
+      sql,
+      [
+        data.fullName,
+        data.gmail,
+        data.phone,
+        data.message,
+        resume,
+        coverletter,
+        data.jobType,
+        "notSeen",
 
-  //       postedDate,
-  //     ],
-  //     (err, rows, fields) => {
-  //       if (!err) {
-  //         return res.status(200).json({
-  //           status: "ok",
-  //           success: true,
-  //         });
-  //       } else console.log(err);
-  //     }
-  //   );
-  // } catch (err) {
-  //   res.json({
-  //     message: err,
-  //   });
-  // }
+        postedDate,
+      ],
+      (err, rows, fields) => {
+        if (!err) {
+          return res.status(200).json({
+            status: "ok",
+            success: true,
+          });
+        } else console.log(err);
+      }
+    );
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
 });
 
 //get externalAppliacnt from allApplicant
