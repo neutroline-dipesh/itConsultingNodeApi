@@ -9,7 +9,6 @@ const { stringify } = require("querystring");
 const nodemailer = require("nodemailer");
 const NodeMailerConfig = require("../config/nodemailer.config");
 
-
 //for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -191,7 +190,6 @@ tr{
 
   smtpTransport.close();
 
-
   try {
     if (!req.body.captcha)
       return res.json({ success: false, msg: "Please select captcha" });
@@ -241,7 +239,6 @@ tr{
         }
       );
     }
-   
   } catch (err) {
     res.json({
       message: err,

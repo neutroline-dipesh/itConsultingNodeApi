@@ -42,6 +42,7 @@ router.post("/", files, async (req, res) => {
   var resume = "";
   var coverletter = "";
   var resumeOriginalName = "";
+
   if (req.files.resume) {
     resume = "http://" + req.headers.host + "/" + req.files.resume[0].path;
     resumeOriginalName = req.files.resume[0].originalname;
@@ -50,174 +51,173 @@ router.post("/", files, async (req, res) => {
     coverletter =
       "http://" + req.headers.host + "/" + req.files.coverletter[0].path;
   }
-  googlefile_upload.multiplecreate_folder(
-    `${data.fullName}`,
-    "application/vnd.google-apps.folder",
-    ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
-    req.files.resume[0].originalname,
-    fs.createReadStream(req.files.resume[0].path),
-    req.files.resume[0].mimetype,
-    req.files.coverletter[0].originalname,
-    fs.createReadStream(req.files.coverletter[0].path),
-    req.files.coverletter[0].mimetype
-  );
+  // googlefile_upload.multiplecreate_folder(
+  //   `${data.fullName}`,
+  //   "application/vnd.google-apps.folder",
+  //   ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+  //   req.files.resume[0].originalname,
+  //   fs.createReadStream(req.files.resume[0].path),
+  //   req.files.resume[0].mimetype,
+  //   req.files.coverletter[0].originalname,
+  //   fs.createReadStream(req.files.coverletter[0].path),
+  //   req.files.coverletter[0].mimetype
+  // );
 
-  let setpTransport = nodeMailer.createTransport({
-    service: "Gmail",
-    port: 465,
-    auth: {
-      user: NodeMailerConfig.user,
-      pass: NodeMailerConfig.pass,
-    },
-  });
-  let mailOptions = {
-    from: data.gmail,
-    to: NodeMailerConfig.user,
-    subject: `Message from ${data.fullName} for finding new position`,
-    html: `
-    <html>
-    <head>
-    <style>
-    .bodyContainer{
-    width: 80%;
-    height: auto;
-    background-color:#f1f1f1;
-    padding: 2rem;
-    
-  }
-  .innerBox{
-    font-family: arial, sans-serif;
-    font-size: 16px;
-    width: 36rem;
-    position:relative;
-    margin-left:5%;
-    background-color:white;
-    height: auto;
-    padding:2rem;
-  }
-  
-  .topBox{
-    height: auto;
-    width: 40rem;
-    background-color:#8ea9db;
-    padding-top:1rem;
-    padding-bottom:0.5rem;
-    position:relative;
-    margin-left:5%;
-  }
-  
-  p{
-    color: #fff;
-    text-align:center;
-    font-weight: 700;
-  }
-  img{
-    height: auto;
-    width: 200px;
-    margin-left:32%;
-  
-  }
-  
-  .footerText{
-    color: #3e7aba;
-    text-align:center;
-    margin-top:5px;
-  }
-  li{
-    list-style-type: none;
-    line-height: 2em;
-    font-size:14px;
-  }
-  table {
-    font-family: arial, sans-serif;
-    font-size: 14px;
-    width: 80%;
-    position:relative;
-    margin-left:10%;
-  }
-  
-  td {
-    text-align: left;
-    padding: 8px;
-  }
-  
-  tr{
-    background-color: #dddddd;
-  }
-  
-  </style>
-    </head>
-    <body>
-    <div class ="bodyContainer">
-    
-    <div class="topBox">
-    <img src="cid:logo" alt="logo"/>
-    <p> External Job Application</p>
-    </div>
-    <div class="innerBox">
-   
-    
-    <h3>Hi,<br>
-  
-    ${data.fullName} has submitted a job application on ${data.jobType}.</h3>
-    <table class = "table">
-    <tbody>
-    <tr>
-    <td>Name: </td>
-    <td>${data.fullName}</td>
-  </tr>
-  <tr>
-    <td>Email: </td>
-    <td>${data.gmail}</td>
-  </tr>
-  <tr>
-    <td>Phone: </td>
-    <td>${data.phone}</td>
-  </tr>
-  <tr>
-    <td>Message: </td>
-    <td>${data.message}</td>
-  </tr>
-  <tr>
-    <td>Job Type: </td>
-    <td>${data.jobType}</td>
-  </tr>
-    </tbody>
-  </table>
-  
-  </div>
-  <div class="footerText">©Neutrosys Pvt Ltd.</div>
-  </body>
-  </html>
-    
-    `,
-    attachments: [
-      {
-        filename: req.files.resume[0].originalname,
-        path: req.files.resume[0].path,
-      },
-      {
-        filename: req.files.coverletter[0].originalname,
-        path: req.files.coverletter[0].path,
-      },
-      {
-        filename: "logo.jpg",
-        path: `${__dirname}/../public/assets/logo.png`,
-        cid: "logo",
-      },
-    ],
-  };
-  setpTransport.sendMail(mailOptions, (error) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("success");
-    }
-  });
+  // let setpTransport = nodeMailer.createTransport({
+  //   service: "Gmail",
+  //   port: 465,
+  //   auth: {
+  //     user: NodeMailerConfig.user,
+  //     pass: NodeMailerConfig.pass,
+  //   },
+  // });
+  // let mailOptions = {
+  //   from: data.gmail,
+  //   to: NodeMailerConfig.user,
+  //   subject: `Message from ${data.fullName} for finding new position`,
+  //   html: `
+  //   <html>
+  //   <head>
+  //   <style>
+  //   .bodyContainer{
+  //   width: 80%;
+  //   height: auto;
+  //   background-color:#f1f1f1;
+  //   padding: 2rem;
+
+  // }
+  // .innerBox{
+  //   font-family: arial, sans-serif;
+  //   font-size: 16px;
+  //   width: 36rem;
+  //   position:relative;
+  //   margin-left:5%;
+  //   background-color:white;
+  //   height: auto;
+  //   padding:2rem;
+  // }
+
+  // .topBox{
+  //   height: auto;
+  //   width: 40rem;
+  //   background-color:#8ea9db;
+  //   padding-top:1rem;
+  //   padding-bottom:0.5rem;
+  //   position:relative;
+  //   margin-left:5%;
+  // }
+
+  // p{
+  //   color: #fff;
+  //   text-align:center;
+  //   font-weight: 700;
+  // }
+  // img{
+  //   height: auto;
+  //   width: 200px;
+  //   margin-left:32%;
+
+  // }
+
+  // .footerText{
+  //   color: #3e7aba;
+  //   text-align:center;
+  //   margin-top:5px;
+  // }
+  // li{
+  //   list-style-type: none;
+  //   line-height: 2em;
+  //   font-size:14px;
+  // }
+  // table {
+  //   font-family: arial, sans-serif;
+  //   font-size: 14px;
+  //   width: 80%;
+  //   position:relative;
+  //   margin-left:10%;
+  // }
+
+  // td {
+  //   text-align: left;
+  //   padding: 8px;
+  // }
+
+  // tr{
+  //   background-color: #dddddd;
+  // }
+
+  // </style>
+  //   </head>
+  //   <body>
+  //   <div class ="bodyContainer">
+
+  //   <div class="topBox">
+  //   <img src="cid:logo" alt="logo"/>
+  //   <p> External Job Application</p>
+  //   </div>
+  //   <div class="innerBox">
+
+  //   <h3>Hi,<br>
+
+  //   ${data.fullName} has submitted a job application on ${data.jobType}.</h3>
+  //   <table class = "table">
+  //   <tbody>
+  //   <tr>
+  //   <td>Name: </td>
+  //   <td>${data.fullName}</td>
+  // </tr>
+  // <tr>
+  //   <td>Email: </td>
+  //   <td>${data.gmail}</td>
+  // </tr>
+  // <tr>
+  //   <td>Phone: </td>
+  //   <td>${data.phone}</td>
+  // </tr>
+  // <tr>
+  //   <td>Message: </td>
+  //   <td>${data.message}</td>
+  // </tr>
+  // <tr>
+  //   <td>Job Type: </td>
+  //   <td>${data.jobType}</td>
+  // </tr>
+  //   </tbody>
+  // </table>
+
+  // </div>
+  // <div class="footerText">©Neutrosys Pvt Ltd.</div>
+  // </body>
+  // </html>
+
+  //   `,
+  //   attachments: [
+  //     {
+  //       filename: req.files.resume[0].originalname,
+  //       path: req.files.resume[0].path,
+  //     },
+  //     {
+  //       filename: req.files.coverletter[0].originalname,
+  //       path: req.files.coverletter[0].path,
+  //     },
+  //     {
+  //       filename: "logo.jpg",
+  //       path: `${__dirname}/../public/assets/logo.png`,
+  //       cid: "logo",
+  //     },
+  //   ],
+  // };
+  // setpTransport.sendMail(mailOptions, (error) => {
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //     console.log("success");
+  //   }
+  // });
 
   try {
     var sql =
-      "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?,postedDate = ?";
+      "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?, approvelStatus = ?,postedDate = ?";
     await mysqlconnection.query(
       sql,
       [
@@ -229,15 +229,14 @@ router.post("/", files, async (req, res) => {
         coverletter,
         data.jobType,
         "notSeen",
-
+        "notSeen",
         postedDate,
       ],
       (err, rows, fields) => {
         if (!err) {
           return res.status(200).json({
             status: "ok",
-            success: true,
-            msg: "Captcha passed",
+
             data: data,
           });
         } else console.log(err);
@@ -347,6 +346,33 @@ router.patch("/status/:id", auth, async (req, res) => {
         });
       } else console.log(err);
     });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+});
+//update approvelStatus from external Applicant
+router.patch("/status/approvel/:id", auth, async (req, res) => {
+  console.log(req.body);
+
+  let data = req.body;
+
+  try {
+    var sql =
+      "UPDATE externalapplicant set status = ?,approvelStatus = ? WHERE id = ?";
+    mysqlconnection.query(
+      sql,
+      ["seen", req.body.approvelStatus, req.params.id],
+      (err, rows, fields) => {
+        if (!err) {
+          res.status(200).json({
+            status: "ok",
+            data: data,
+          });
+        } else console.log(err);
+      }
+    );
   } catch (err) {
     res.json({
       message: err,

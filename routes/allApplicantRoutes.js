@@ -365,7 +365,7 @@ router.patch("/approvelStatus/:id", auth, async (req, res) => {
       "UPDATE allapplicant set status = ?,approvelStatus = ? WHERE id = ?";
     mysqlconnection.query(
       sql,
-      ["seen", data.approvelStatus, req.params.id],
+      ["seen", req.body.approvelStatus, req.params.id],
       (err, rows, fields) => {
         if (!err) {
           res.status(200).json({
