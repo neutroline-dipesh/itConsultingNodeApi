@@ -21,7 +21,7 @@ const drive = google.drive({
 });
 
 
-const google_upload = (originalName, destination, mimeType,id) => {
+const google_upload_resume = (originalName, destination, mimeType,id) => {
   
   const fileMetadata = {
     name: originalName,
@@ -41,8 +41,11 @@ const google_upload = (originalName, destination, mimeType,id) => {
     (err, response) => {
       if (!err) {
 
-        generatePublicUrl(response.data.id) 
-      // console.log(response.data);
+       generatePublicResumeUrl(response.data.id,function(response){
+         console.log(response)
+       }) 
+    // console.log(response.data);
+    
 
       
       } else {
@@ -52,46 +55,36 @@ const google_upload = (originalName, destination, mimeType,id) => {
   );
 };
 
-const create_folder = (
-  folder_name,
-  mimeType,
-  parents,
-  originalname,
-  destination,
-  filemimetype
-) => {
+const google_upload_coverletter = (originalName, destination, mimeType,id) => {
+  
   const fileMetadata = {
-        name:folder_name,
-        mimeType:mimeType,
-        parents: parents,
-      };
+    name: originalName,
+    mimetype: mimeType,
+    parents: id,
+  };
+  const media = {
+    mimetype: mimeType,
+    body: destination,
+  };
+  drive.files.create(
+    {
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    },
+    (err, response) => {
+      if (!err) {
 
+      // generatePublicUrl(response.data.id) 
+    
 
-      drive.files.create(
-            {
-              resource: fileMetadata,
-              fields: "id",
-            },
-            (err, response) => {
-              if (!err) {
-                
-                const id=response.data.id;
-                google_upload(
-                  originalname , 
-                    destination,
-                    filemimetype,
-                    [id]
-                  ); 
-
-                  
-                
-              } else {
-                console.log(err);
-              }
-            }
-          );
-}
-
+      
+      } else {
+        console.log(err);
+      }
+    }
+  );
+};
 
 
 const multiplecreate_folder = (
@@ -122,14 +115,16 @@ const multiplecreate_folder = (
               if (!err) {
                 
                 const id=response.data.id;
-                google_upload(
+                
+                google_upload_resume(
                   
                   resumeoriginalname , 
                     resumedestination,
                     resumefilemimetype,
                     [id]
-                  ); 
-                  google_upload(
+                  );
+
+                  google_upload_coverletter(
                   
                     coverletteroriginalname , 
                       coverletterdestination,
@@ -145,10 +140,12 @@ const multiplecreate_folder = (
 }
 
 
-async function generatePublicUrl(id) {
+async function generatePublicResumeUrl(id,cbId) {
   try {
-     
+
+   
       //change file permisions to public.
+     
       await drive.permissions.create({
           fileId: id,
           requestBody: {
@@ -160,12 +157,16 @@ async function generatePublicUrl(id) {
       //obtain the webview and webcontent links
       const result = await drive.files.get({
           fileId: id,
-          fields: '*',
+          fields: 'webViewLink',
           
       });
 
-      
-    console.log(result.data);
+  
+  const LinkId=result.data;
+ console.log(LinkId.webViewLink)
+  return cbId(LinkId.webViewLink);
+ 
+
   } catch (error) {
     console.log(error.message);
   }
@@ -175,5 +176,5 @@ async function generatePublicUrl(id) {
   
 
 module.exports={
-  create_folder,multiplecreate_folder
+  multiplecreate_folder
 }

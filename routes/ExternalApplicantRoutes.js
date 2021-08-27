@@ -34,7 +34,9 @@ const files = upload.fields([
 
 //post externalApplicant
 
-router.post("/", files, async (req, res) => {
+router.post("/", files, async(req, res) => {
+
+ 
   let data = req.body;
   var date = new Date();
   var postedDate =
@@ -62,6 +64,8 @@ router.post("/", files, async (req, res) => {
     coverPath = req.files.coverletter[0].path;
   }
 
+ 
+
   googlefile_upload.multiplecreate_folder(
     `${data.fullName}`,
     "application/vnd.google-apps.folder",
@@ -71,8 +75,15 @@ router.post("/", files, async (req, res) => {
     resumemimeType,
     coverOriginalName,
     coverletterdestination,
-    coverlettermimeType
+    coverlettermimeType,
+    function(response){
+      return coverWebId(response);
+    },
+     function(resp){
+      console.log(resp) ;
+    }
   );
+  
 
   let setpTransport = nodeMailer.createTransport({
     service: "Gmail",
