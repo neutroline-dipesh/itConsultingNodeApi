@@ -40,10 +40,6 @@ app.use("/user", userRouter);
 app.use("/requestTalent", requestTalentRouter);
 app.use("/externalApplicant", externalApplicatnRouter);
 
-
-
-
-
 app.listen(PORT, () => {
   console.log("Server start at port : " + PORT);
   //   console.log(dbConfig);

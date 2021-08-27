@@ -4,11 +4,9 @@ const mysqlconnection = require("../model/db");
 const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
-const nodeMailer = require("nodemailer");
 const fs = require("fs");
 const googlefile_upload = require("./credentials");
-const NodeMailerConfig = require("../config/nodemailer.config");
-
+const mailFunction = require("../uitlity/mail");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/assets");
@@ -36,6 +34,7 @@ const files = upload.fields([
 
 router.post("/", files, async (req, res) => {
   let data = req.body;
+  console.log(req.files.resume);
   var date = new Date();
   var postedDate =
     date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -46,12 +45,21 @@ router.post("/", files, async (req, res) => {
   var coverletterdestination = "";
   var coverlettermimeType = "";
   var coverPath = "";
+  var tableId = "";
 
-  resume = "http://" + req.headers.host + "/" + req.files.resume[0].path;
-  resumeOriginalName = req.files.resume[0].originalname;
+  // var resume = "";
+  var resumeOriginalName = "";
+  var resumedestination = "";
+  var resumemimeType = "";
+  var resumePath = "",
+    // if(req.files.resume) {
+    // resume = "http://" + req.headers.host + "/" + req.files.resume[0].path;
+
+    resumeOriginalName = req.files.resume[0].originalname;
   resumedestination = fs.createReadStream(req.files.resume[0].path);
   resumemimeType = req.files.resume[0].mimetype;
   resumePath = req.files.resume[0].path;
+  // }
 
   if (req.files.coverletter) {
     coverletter =
@@ -62,171 +70,17 @@ router.post("/", files, async (req, res) => {
     coverPath = req.files.coverletter[0].path;
   }
 
-  googlefile_upload.multiplecreate_folder(
-    `${data.fullName}`,
-    "application/vnd.google-apps.folder",
-    ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+  mailFunction.mailFunction(
+    data.fullName,
+    data.gmail,
+    data.phone,
+    data.message,
+    data.jobType,
     resumeOriginalName,
-    resumedestination,
-    resumemimeType,
+    resumePath,
     coverOriginalName,
-    coverletterdestination,
-    coverlettermimeType
+    coverPath
   );
-
-  let setpTransport = nodeMailer.createTransport({
-    service: "Gmail",
-    port: 465,
-    auth: {
-      user: NodeMailerConfig.user,
-      pass: NodeMailerConfig.pass,
-    },
-  });
-  let mailOptions = {
-    from: data.gmail,
-    to: NodeMailerConfig.user,
-    subject: `Message from ${data.fullName} for finding new position`,
-    html: `
-    <html>
-    <head>
-    <style>
-    .bodyContainer{
-    width: 80%;
-    height: auto;
-    background-color:#f1f1f1;
-    padding: 2rem;
-    
-  }
-  .innerBox{
-    font-family: arial, sans-serif;
-    font-size: 16px;
-    width: 36rem;
-    position:relative;
-    margin-left:5%;
-    background-color:white;
-    height: auto;
-    padding:2rem;
-  }
-  
-  .topBox{
-    height: auto;
-    width: 40rem;
-    background-color:#8ea9db;
-    padding-top:1rem;
-    padding-bottom:0.5rem;
-    position:relative;
-    margin-left:5%;
-  }
-  
-  p{
-    color: #fff;
-    text-align:center;
-    font-weight: 700;
-  }
-  img{
-    height: auto;
-    width: 200px;
-    margin-left:32%;
-  
-  }
-  
-  .footerText{
-    color: #3e7aba;
-    text-align:center;
-    margin-top:5px;
-  }
-  li{
-    list-style-type: none;
-    line-height: 2em;
-    font-size:14px;
-  }
-  table {
-    font-family: arial, sans-serif;
-    font-size: 14px;
-    width: 80%;
-    position:relative;
-    margin-left:10%;
-  }
-  
-  td {
-    text-align: left;
-    padding: 8px;
-  }
-  
-  tr{
-    background-color: #dddddd;
-  }
-  
-  </style>
-    </head>
-    <body>
-    <div class ="bodyContainer">
-    
-    <div class="topBox">
-    <img src="cid:logo" alt="logo"/>
-    <p> External Job Application</p>
-    </div>
-    <div class="innerBox">
-   
-    
-    <h3>Hi,<br>
-  
-    ${data.fullName} has submitted a job application on ${data.jobType}.</h3>
-    <table class = "table">
-    <tbody>
-    <tr>
-    <td>Name: </td>
-    <td>${data.fullName}</td>
-  </tr>
-  <tr>
-    <td>Email: </td>
-    <td>${data.gmail}</td>
-  </tr>
-  <tr>
-    <td>Phone: </td>
-    <td>${data.phone}</td>
-  </tr>
-  <tr>
-    <td>Message: </td>
-    <td>${data.message}</td>
-  </tr>
-  <tr>
-    <td>Job Type: </td>
-    <td>${data.jobType}</td>
-  </tr>
-    </tbody>
-  </table>
-  
-  </div>
-  <div class="footerText">©Neutrosys Pvt Ltd.</div>
-  </body>
-  </html>
-    
-    `,
-    attachments: [
-      {
-        filename: resumeOriginalName,
-        path: resumePath,
-      },
-      {
-        filename: coverOriginalName,
-        path: coverPath,
-      },
-      {
-        filename: "logo.jpg",
-        path: `${__dirname}/../public/assets/logo.png`,
-        cid: "logo",
-      },
-    ],
-  };
-  setpTransport.sendMail(mailOptions, (error) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("success");
-    }
-  });
-
   try {
     var sql =
       "INSERT INTO externalapplicant SET fullName = ?, gmail = ?, phone = ?,   message = ?, resume = ? , coverletter = ?, jobType  = ?, status = ?, approvelStatus = ?,postedDate = ?";
@@ -237,19 +91,32 @@ router.post("/", files, async (req, res) => {
         data.gmail,
         data.phone,
         data.message,
-        resume,
-        coverletter,
+        " ",
+        " ",
         data.jobType,
         "notSeen",
-        "notSeen",
+        "Not seen",
         postedDate,
       ],
       (err, rows, fields) => {
+        tableId = rows.insertId;
         if (!err) {
+          googlefile_upload.multiplecreate_folder(
+            `${data.fullName}`,
+            "application/vnd.google-apps.folder",
+            ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+            resumeOriginalName,
+            resumedestination,
+            resumemimeType,
+            coverOriginalName,
+            coverletterdestination,
+            coverlettermimeType,
+            tableId
+          );
+
           return res.status(200).json({
             status: "ok",
-
-            data: data,
+            data: fields,
           });
         } else console.log(err);
       }
