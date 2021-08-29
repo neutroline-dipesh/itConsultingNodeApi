@@ -168,5 +168,5 @@ const mailFunction = (
 };
 
 module.exports = {
-  mailFunction,
+  mailFunction
 };
