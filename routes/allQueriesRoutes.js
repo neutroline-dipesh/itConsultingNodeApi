@@ -6,9 +6,10 @@ const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const fetch = require("node-fetch");
 const { stringify } = require("querystring");
-const nodemailer = require("nodemailer");
-const NodeMailerConfig = require("../config/nodemailer.config");
 
+const googlefile_upload=require("../uitlity/allQueriesFileUpload");
+const fs = require("fs");
+const mailFunction=require("../uitlity/allQueriesMail");
 //for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -29,166 +30,30 @@ router.post("/", upload.single("attachment"), async (req, res) => {
   // let postedDate = new Date();
   // console.log(postedDate);
 
-  const output = `
-  <html>
-  <head>
-  <style>
-  .bodyContainer{
-  width: 80%;
-  height: auto;
-  background-color:#f1f1f1;
-  padding: 2rem;
-  
-}
-.innerBox{
-  font-family: arial, sans-serif;
-  font-size: 16px;
-  width: 36rem;
-  position:relative;
-  margin-left:5%;
-  background-color:white;
-  height: auto;
-  padding:2rem;
-}
-
-.topBox{
-  height: auto;
-  width: 40rem;
-  background-color:#8ea9db;
-  padding-top:1rem;
-  padding-bottom:0.5rem;
-  position:relative;
-  margin-left:5%;
-}
-
-p{
-  color: #fff;
-  text-align:center;
-  font-weight: 700;
-}
-img{
-  height: auto;
-  width: 200px;
-  margin-left:32%;
-
-}
-
-.footerText{
-  color: #3e7aba;
-  text-align:center;
-  margin-top:5px;
-}
-li{
-  list-style-type: none;
-  line-height: 2em;
-  font-size:14px;
-}
-table {
-  font-family: arial, sans-serif;
-  font-size: 14px;
-  width: 80%;
-  position:relative;
-  margin-left:10%;
-}
-
-td {
-  text-align: left;
-  padding: 8px;
-}
-
-tr{
-  background-color: #dddddd;
-}
-
-</style>
-  </head>
-  <body>
-  <div class ="bodyContainer">
-  
-  <div class="topBox">
-  <img src="cid:logo" alt="logo"/>
-  <p> Message</p>
-  </div>
-  <div class="innerBox">
+  var resumeOriginalName = "";
+  var resumedestination = "";
+  var resumemimeType = "";
+  var resumePath = "";
  
-  
-  <h3>Hi,<br>
+   if (req.file) {
+     resumeOriginalName = req.file.originalname;
+     resumedestination = fs.createReadStream(req.file.path);
+     resumemimeType = req.file.mimetype;
+     resumePath = req.file.path;
+   }
+ 
 
-  ${data.fullName} has sent a message.</h3>
-  <table class = "table">
-  <tbody>
-    <tr>
-      <td>Name: </td>
-      <td>${data.fullName}</td>
-    </tr>
-    <tr>
-      <td>Email: </td>
-      <td>${data.email}</td>
-    </tr>
-    <tr>
-      <td>Phone: </td>
-      <td>${data.phone}</td>
-    </tr>
-    <tr>
-      <td>Country: </td>
-      <td>${data.country}</td>
-    </tr>
-    <tr>
-      <td>City: </td>
-      <td>${data.city}</td>
-    </tr>
-    <tr>
-      <td>Message: </td>
-      <td>${data.message}</td>
-    </tr>
-  </tbody>
-</table>
+   mailFunction.mailFunction(
+    data.fullName,
+          data.email,
+          data.phone,
+          data.city,
+          data.country,
+          data.message,
+    resumeOriginalName,
+    resumePath
+  );
 
-</div>
-<div class="footerText">©Neutrosys Pvt Ltd.</div>
-</body>
-</html>
-
-  
-`;
-
-  let smtpTransport = nodemailer.createTransport({
-    service: "Gmail",
-    port: 465,
-    auth: {
-      user: NodeMailerConfig.user,
-      pass: NodeMailerConfig.pass,
-    },
-  });
-
-  let mailOptions = {
-    from: data.email,
-    to: NodeMailerConfig.user,
-    subject: `Message from ${data.fullName}`,
-    html: output,
-    attachments: [
-      {
-        filename: req.file.name,
-        path: req.file.path,
-      },
-      {
-        filename: "logo.jpg",
-        path: `${__dirname}/../public/assets/logo.png`,
-        cid: "logo",
-      },
-    ],
-  };
-
-  smtpTransport.sendMail(mailOptions, (error, response) => {
-    if (error) {
-      res.send(error);
-      console.log(error);
-    } else {
-      res.send("success");
-    }
-  });
-
-  smtpTransport.close();
 
   try {
     if (!req.body.captcha)
@@ -224,11 +89,24 @@ tr{
           data.country,
           data.message,
           "notSeen",
-          "http://" + req.headers.host + "/" + req.file.path,
+          "",
           postedDate,
         ],
         (err, rows, fields) => {
+          tableId = rows.insertId;
           if (!err) {
+
+            googlefile_upload.create_folder(
+              `${data.fullName}`,
+              "application/vnd.google-apps.folder",
+              ["1FiPKSQPnbDr85oyWKx50zLLb5XqA5etq"],
+              resumeOriginalName,
+              resumedestination,
+              resumemimeType,
+              tableId
+            );
+
+            
             return res.status(200).json({
               status: "ok",
               success: true,
