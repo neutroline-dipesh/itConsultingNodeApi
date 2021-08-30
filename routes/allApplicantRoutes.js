@@ -7,8 +7,8 @@ const auth = require("../middlewares/checkAuth");
 
 const fs = require("fs");
 
-const google_upload = require("../uitlity/AllApplicantCredential");
-const mailFunction=require("../uitlity/AllApplicantConfig");
+const google_upload = require("../uitlity/allApplicantFileUpload");
+const mailFunction=require("../uitlity/allApplicantMail");
 //for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

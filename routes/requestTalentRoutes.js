@@ -7,8 +7,8 @@ const auth = require("../middlewares/checkAuth");
 const fetch = require("node-fetch");
 const { stringify } = require("querystring");
 const fs = require("fs");
-const googlefile_upload = require("../uitlity/RequestTalentCredential");
-const mailFunction = require("../uitlity/RequestTalentConfig");
+const googlefile_upload = require("../uitlity/requestTalentFileUpload");
+const mailFunction = require("../uitlity/requestTalentMail");
 
 //for file upload
 const storage = multer.diskStorage({

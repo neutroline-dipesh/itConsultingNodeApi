@@ -5,8 +5,8 @@ const path = require("path");
 const multer = require("multer");
 const auth = require("../middlewares/checkAuth");
 const fs = require("fs");
-const googlefile_upload = require("./credentials");
-const mailFunction = require("../uitlity/mail");
+const googlefile_upload = require("../uitlity/externalApplicantFileUpload");
+const mailFunction = require("../uitlity/externalApplicantMail");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/assets");

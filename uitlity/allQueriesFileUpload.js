@@ -53,50 +53,21 @@ const google_upload_resume = (
   );
 };
 
-const google_upload_coverletter = (
-  originalName,
-  destination,
-  mimeType,
-  id,
-  tableId
-) => {
-  const fileMetadata = {
-    name: originalName,
-    mimetype: mimeType,
-    parents: id,
-  };
-  const media = {
-    mimetype: mimeType,
-    body: destination,
-  };
-  drive.files.create(
-    {
-      resource: fileMetadata,
-      media: media,
-      fields: "id",
-    },
-    (err, response) => {
-      if (!err) {
-        generatePublicCoverLetterUrl(response.data.id, tableId);
-      } else {
-        console.log(err);
-      }
-    }
-  );
-};
 
-const multiplecreate_folder = (
+
+const create_folder = (
   folder_name,
   mimeType,
   parents,
   resumeoriginalname,
   resumedestination,
   resumefilemimetype,
-  coverletteroriginalname,
-  coverletterdestination,
-  coverletterfilemimetype,
   tableId
 ) => {
+  if(resumeoriginalname)
+  {
+
+  
   const fileMetadata = {
     name: folder_name,
     mimeType: mimeType,
@@ -111,7 +82,7 @@ const multiplecreate_folder = (
     (err, response) => {
       if (!err) {
         const id = response.data.id;
-        if (resumeoriginalname) {
+        
           google_upload_resume(
             resumeoriginalname,
             resumedestination,
@@ -119,22 +90,16 @@ const multiplecreate_folder = (
             [id],
             tableId
           );
-        }
+        
 
-        if (coverletteroriginalname) {
-          google_upload_coverletter(
-            coverletteroriginalname,
-            coverletterdestination,
-            coverletterfilemimetype,
-            [id],
-            tableId
-          );
-        }
+       
       } else {
         console.log(err);
       }
     }
+  
   );
+  }
 };
 
 async function generatePublicResumeUrl(id, tableId) {
@@ -155,7 +120,7 @@ async function generatePublicResumeUrl(id, tableId) {
     });
 
     try {
-      var sql = "UPDATE externalapplicant set resume = ? WHERE id = ?";
+      var sql = "UPDATE allqueries set attachment = ? WHERE id = ?";
       mysqlconnection.query(
         sql,
         [result.data.id, tableId],
@@ -173,42 +138,6 @@ async function generatePublicResumeUrl(id, tableId) {
   }
 }
 
-//for coverletter file id
-async function generatePublicCoverLetterUrl(id, tableId) {
-  try {
-    //change file permisions to public.
-
-    await drive.permissions.create({
-      fileId: id,
-      requestBody: {
-        role: "reader",
-        type: "anyone",
-      },
-    });
-    //obtain the webview and webcontent links
-    const result = await drive.files.get({
-      fileId: id,
-      fields: "id",
-    });
-
-    try {
-      var sql = "UPDATE externalapplicant set coverletter = ? WHERE id = ?";
-      mysqlconnection.query(
-        sql,
-        [result.data.id, tableId],
-        (err, rows, fields) => {
-          if (!err) {
-            console.log("success");
-          } else console.log(err);
-        }
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-}
 module.exports = {
-  multiplecreate_folder,
+  create_folder,
 };
