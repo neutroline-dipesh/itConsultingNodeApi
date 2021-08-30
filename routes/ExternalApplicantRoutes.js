@@ -32,9 +32,7 @@ const files = upload.fields([
 
 //post externalApplicant
 
-router.post("/", files, async(req, res) => {
-
- 
+router.post("/", files, async (req, res) => {
   let data = req.body;
   console.log(req.files.resume);
   var date = new Date();
@@ -72,7 +70,6 @@ router.post("/", files, async(req, res) => {
     coverPath = req.files.coverletter[0].path;
   }
 
-
   mailFunction.mailFunction(
     data.fullName,
     data.gmail,
@@ -103,7 +100,7 @@ router.post("/", files, async(req, res) => {
       ],
       (err, rows, fields) => {
         tableId = rows.insertId;
-       
+
         if (!err) {
           googlefile_upload.multiplecreate_folder(
             `${data.fullName}`,
