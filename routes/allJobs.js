@@ -61,7 +61,7 @@ router.post("/", auth, async (req, res) => {
 router.get("/internal", async (req, res) => {
   try {
     var sql =
-      "SELECT * FROM alljobs WHERE workType = 'Internal' ORDER BY id DESC";
+      "SELECT * FROM alljobs WHERE workType = 'Internal'and visibility = 'Publish' ORDER BY id DESC";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({
@@ -81,7 +81,7 @@ router.get("/internal", async (req, res) => {
 router.get("/contract", async (req, res) => {
   try {
     var sql =
-      "SELECT * FROM alljobs WHERE workType = 'Contract' ORDER BY id DESC";
+      "SELECT * FROM alljobs WHERE workType = 'Contract' visibility = 'Publish' ORDER BY id DESC";
     mysqlconnection.query(sql, (err, result) => {
       if (!err) {
         res.status(200).json({

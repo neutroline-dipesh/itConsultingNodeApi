@@ -22,8 +22,6 @@ app.use("/public/assets", express.static("public/assets"));
 
 //require all routes
 const allQueriesRouter = require("./routes/allQueriesRoutes");
-const interRouter = require("./routes/internalRoutes");
-const contractRouter = require("./routes/contractRoutes");
 const allJobsRouter = require("./routes/allJobs");
 const userRouter = require("./routes/userRoutes");
 const allApplicant = require("./routes/allApplicantRoutes");
@@ -33,8 +31,6 @@ const externalApplicatnRouter = require("./routes/ExternalApplicantRoutes");
 //use all routes
 app.use("/allQueries", allQueriesRouter);
 app.use("/allApplicant", allApplicant);
-app.use("/internal", interRouter);
-app.use("/contract", contractRouter);
 app.use("/allJobs", allJobsRouter);
 app.use("/user", userRouter);
 app.use("/requestTalent", requestTalentRouter);
