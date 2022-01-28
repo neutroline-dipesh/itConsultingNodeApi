@@ -10,7 +10,7 @@ const mysqlconnection = require("../model/db");
 //add user
 router.post("/signup", async (req, res) => {
   let { name, email, password, conformpassword } = req.body;
-
+  console.log(req.body);
   try {
     const schema = Joi.object({
       password: Joi.string().min(4).max(30).required(),
