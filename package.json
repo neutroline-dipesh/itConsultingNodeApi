@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "engines":{
-    "node":"14.15.5"
+  "engines": {
+    "node": "14.15.5"
   },
   "scripts": {
     "start": "node app.js",
